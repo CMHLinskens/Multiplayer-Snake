@@ -9,6 +9,7 @@ namespace Server
     {
         private TcpListener listener;
         private static List<Client> clients;
+        private static Dictionary<string, string> savedAccounts; // <username, password>
 
         static void Main(string[] args)
         {
@@ -21,11 +22,22 @@ namespace Server
          */
         public void StartListen()
         {
+            savedAccounts = LoadTestAccounts();
             clients = new List<Client>();
             listener = new TcpListener(IPAddress.Any, 1330);
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(Connect), null);
             Console.ReadLine();
+        }
+
+        // Loads hardcoded accounts for testing.
+        private Dictionary<string, string> LoadTestAccounts()
+        {
+            Dictionary<string, string> accounts = new Dictionary<string, string>();
+            accounts.Add("Kees", "123");
+            accounts.Add("Frank", "123");
+            accounts.Add("Piet", "123");
+            return accounts;
         }
 
         /*
@@ -48,10 +60,31 @@ namespace Server
             Console.WriteLine($"Client disconnected");
         }
 
+        /*
+         * Sends a package to all connected clients.
+         */
         internal static void Broadcast(byte[] bytes)
         {
             foreach (var client in clients)
                 client.GetStream().Write(bytes, 0, bytes.Length);
+        }
+
+        /*
+         * Checks if received login credentials exits and are correct.
+         */
+        internal static bool CheckCredentials(string username, string password)
+        {
+            foreach(var name in savedAccounts.Keys)
+            {
+                if(name == username) // Check if username exits
+                {
+                    if(savedAccounts.GetValueOrDefault(username, "") == password) // Check if passwords match
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }

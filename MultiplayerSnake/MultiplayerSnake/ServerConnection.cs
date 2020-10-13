@@ -18,6 +18,12 @@ namespace MultiplayerSnake
         private int totalConnectTries;
         private readonly int maxReconnectingTries = 3;
         private byte[] buffer = new byte[1024];
+        private string username = "default";
+        private bool receivedLoginMessage = false;
+        private bool loggedIn = false;
+
+        public bool HasReceivedLoginMessage() { return receivedLoginMessage; }
+        public bool IsLoggedIn() { return loggedIn; }
 
         public ServerConnection()
         {
@@ -25,12 +31,10 @@ namespace MultiplayerSnake
             Connect(ipAddress, port);
         }
 
-        public ServerConnection(string ipAddress, int port)
-        {
-            tcpClient = new TcpClient();
-            Connect(ipAddress, port);
-        }
-
+        /*
+         * Connects the client to the server.
+         * If unsuccessful try again for 3 times.
+         */
         private void Connect(string ipAddress, int port)
         {
             try
@@ -40,9 +44,8 @@ namespace MultiplayerSnake
                 if (tcpClient.Connected)
                     OnConnected();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex);
                 if (!tcpClient.Connected && totalConnectTries < maxReconnectingTries)
                 {
                     totalConnectTries++;
@@ -53,17 +56,26 @@ namespace MultiplayerSnake
             }
         }
 
+        /*
+         * Gets called when connecting to server is successful
+         */
         private void OnConnected()
         {
             tcpClient.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
+        /*
+         * Gets called when connecting to server fails and when connection is lost.
+         */
         private void OnDisconnect()
         {
             tcpClient.GetStream().Dispose();
             tcpClient.Close();
         }
 
+        /*
+         * Method that gets called when the stream is reading something.
+         */
         private void OnRead(IAsyncResult ar)
         {
             try
@@ -81,15 +93,58 @@ namespace MultiplayerSnake
             }
         }
 
+        /*
+         * This method handles all the incoming data received by the OnRead method.
+         */
         private void HandleData(dynamic data)
         {
-            Console.WriteLine(data);
+            string tag = data.tag;
+            switch (tag)
+            {
+                case "chat":
+                    Console.WriteLine($"{data.data.message}");
+                    break;
+                case "login/success":
+                    loggedIn = true;
+                    receivedLoginMessage = true;
+                    Console.WriteLine($"{data.data.message}");
+                    break;
+                case "login/error":
+                    receivedLoginMessage = true;
+                    Console.WriteLine($"{data.data.message}");
+                    break;
+                default:
+                    Console.WriteLine($"No handling found for tag: {tag}");
+                    break;
+            }
         }
 
-        public void SendMessage(string tag, string input)
+        #region // Writer functions
+        /*
+         * Send chat message to server.
+         */
+        public void SendChat(string input)
         {
-            byte[] bytes = PackageWrapper.SerializeData(tag, new { message = input });
+            byte[] bytes = PackageWrapper.SerializeData("chat", new { message = input });
             tcpClient.GetStream().Write(bytes, 0, bytes.Length);
         }
+        /*
+         * Sends the user credentials to the server to login.
+         */
+        public void Login(string username, string password)
+        {
+            receivedLoginMessage = false;
+            byte[] bytes = PackageWrapper.SerializeData("login", new { username = username, password = password });
+            tcpClient.GetStream().Write(bytes, 0, bytes.Length);
+        }
+        /*
+         * Connects the client to the lobby with the same name.
+         */
+        public void ConnectToLobby(string lobbyName, string password)
+        {
+            byte[] bytes = PackageWrapper.SerializeData("join", new { lobbyName = lobbyName, password = password });
+            tcpClient.GetStream().Write(bytes, 0, bytes.Length);
+        }
+        #endregion
     }
 }

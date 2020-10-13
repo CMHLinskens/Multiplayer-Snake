@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Net.Mail;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using Utils;
 
@@ -11,6 +12,7 @@ namespace Server
     class Client
     {
         private TcpClient tcpClient;
+        private string username;
         private byte[] buffer = new byte[1024];
 
         public NetworkStream GetStream() { return tcpClient.GetStream(); }
@@ -54,11 +56,19 @@ namespace Server
             switch (tag)
             {
                 case "chat":
-                    bytes = PackageWrapper.SerializeData(tag, receivedData.data);
+                    bytes = PackageWrapper.SerializeData(tag, new { message = $"{username}: {receivedData.data.message}" });
                     Program.Broadcast(bytes);
                     break;
+                case "login":
+                    username = receivedData.data.username;
+                    if(Program.CheckCredentials(username, (string)receivedData.data.password))
+                        bytes = PackageWrapper.SerializeData("login/success", new { message = "Successfully logged in." });
+                    else
+                        bytes = PackageWrapper.SerializeData("login/error", new { message = "Username and/or password is incorrect." });
+                    tcpClient.GetStream().Write(bytes, 0, bytes.Length);
+                    break;
                 default:
-                    Console.WriteLine($"No handling found for command: {tag}");
+                    Console.WriteLine($"No handling found for tag: {tag}");
                     break;
             }
         }
@@ -68,7 +78,8 @@ namespace Server
          */
         private void Disconnect()
         {
-            tcpClient.GetStream().Close();
+            tcpClient.GetStream().Dispose();
+            tcpClient.Close();
             Program.Disconnect(this);
         }
     }
