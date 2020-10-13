@@ -6,7 +6,14 @@ namespace MultiplayerSnake
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            ServerConnection sc = new ServerConnection();
+
+            string input = "";
+            while (true)
+            {
+                input = Console.ReadLine();
+                sc.SendMessage("chat", input);
+            }
         }
     }
 }
