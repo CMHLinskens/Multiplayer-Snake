@@ -40,6 +40,7 @@ namespace SnakeClient
         {
             try
             {
+                tcpClient = new TcpClient();
                 tcpClient.Connect(ipAddress, port);
 
                 if (tcpClient.Connected)
@@ -68,10 +69,17 @@ namespace SnakeClient
         /*
          * Gets called when connecting to server fails and when connection is lost.
          */
-        public void Disconnect()
+        private void Disconnect()
         {
-            tcpClient.GetStream().Dispose();
-            tcpClient.Close();
+            try
+            {
+                tcpClient.GetStream().Dispose();
+                tcpClient.Close();
+            }
+            catch (ObjectDisposedException)
+            {
+
+            }
         }
 
         /*
@@ -88,6 +96,10 @@ namespace SnakeClient
                 tcpClient.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
             }
             catch (IOException)
+            {
+                Disconnect();
+            }
+            catch (ObjectDisposedException)
             {
                 Disconnect();
             }
@@ -111,6 +123,7 @@ namespace SnakeClient
                     break;
                 case "login/error":
                     receivedLoginMessage = true;
+                    Disconnect();
                     Console.WriteLine($"{data.data.message}");
                     break;
                 default:

@@ -37,7 +37,6 @@ namespace SnakeClient.ViewModels
         private void LoginFailed()
         {
             LoginMessage = "Please try again";
-            shellViewModel.Program.sc.Disconnect();
         }
 
         private void LoginSucceeded()

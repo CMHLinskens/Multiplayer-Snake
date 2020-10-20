@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net.Mail;
@@ -41,6 +42,11 @@ namespace Server
                 Server.Disconnect(this);
                 return;
             }
+            catch (RuntimeBinderException)
+            {
+                Server.Disconnect(this);
+                return;
+            }
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -72,15 +78,5 @@ namespace Server
                     break;
             }
         }
-
-        /*
-         * This method closes the stream and removes itself from the server.
-         */
-        //private void Disconnect()
-        //{
-        //    stream.Dispose();
-        //    tcpClient.Close();
-        //    Program.Disconnect(this);
-        //}
     }
 }
