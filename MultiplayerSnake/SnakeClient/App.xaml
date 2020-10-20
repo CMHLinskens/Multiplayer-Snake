@@ -13,5 +13,11 @@
             <!--Should be TabControlView-->
             <views:TopBarView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:LobbyTabViewModel}">
+            <views:LobbyTabView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ChatTabViewModel}">
+            <views:ChatTabView/>
+        </DataTemplate>
     </Application.Resources>
 </Application>

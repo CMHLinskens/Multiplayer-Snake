@@ -11,8 +11,8 @@ namespace SnakeClient.ViewModels
         public ChatTabViewModel ChatTabViewModel { get; set; }
         public TabControlViewModel(ShellViewModel shellViewModel)
         {
-            LobbyTabViewModel = new LobbyTabViewModel();
-            ChatTabViewModel = new ChatTabViewModel();
+            LobbyTabViewModel = new LobbyTabViewModel(shellViewModel);
+            ChatTabViewModel = new ChatTabViewModel(shellViewModel);
         }
     }
 }

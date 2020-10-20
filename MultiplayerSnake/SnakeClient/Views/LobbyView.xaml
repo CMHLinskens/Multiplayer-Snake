@@ -5,8 +5,48 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SnakeClient.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="380" d:DesignWidth="550" Background="White" FontSize="22">
     <Grid>
-            
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="1.4*"/>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+
+        <!--Row 1-->
+        <TextBlock Grid.Column="2" Grid.Row="1" Grid.ColumnSpan="2" Text="Binding Name" FontSize="40"/>
+        
+        <!--Row 2-->
+        <ListView Grid.Column="2" Grid.Row="2"  Grid.ColumnSpan="2" Margin="0, 20, 0, 0">            
+        </ListView>
+        
+        <!--Row 3-->
+        <TextBlock  Grid.Column="2" Grid.Row="3" Margin="0, 0, 0, 0" Text="Owner:"/>
+        <TextBlock  Grid.Column="3" Grid.Row="3" Margin="0, 0, 0, 0" Text="Binding Owner"/>
+
+        <!--Row 4-->
+        <TextBlock  Grid.Column="2" Grid.Row="4" Margin="0, 0, 0, 0" Text="Players:"/>
+        <TextBlock  Grid.Column="3" Grid.Row="4" Margin="0, 0, 0, 0" Text="Binding Players"/>
+        
+        <!--Row 5-->
+        <TextBlock  Grid.Column="2" Grid.Row="5" Margin="0, 0, 0, 0" Text="Map size:"/>
+        <TextBlock  Grid.Column="3" Grid.Row="5" Margin="0, 0, 0, 0" Text="Binding MapSize"/>
+        
+        <!--Row 6-->
+        <Button Grid.Column="4" Grid.Row="6" Content="Join" FontSize="16" Margin="20, 0" Command="{Binding JoinCommand}"/>
     </Grid>
 </UserControl>

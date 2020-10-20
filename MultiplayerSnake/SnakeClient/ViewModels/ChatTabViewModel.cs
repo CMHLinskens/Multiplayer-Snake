@@ -5,9 +5,9 @@ using System.Text;
 
 namespace SnakeClient.ViewModels
 {
-    public class ChatTabViewModel : CustomObservableObject
+    class ChatTabViewModel : CustomObservableObject
     {
-        public ChatTabViewModel()
+        public ChatTabViewModel(ShellViewModel shellViewModel)
         {
 
         }
