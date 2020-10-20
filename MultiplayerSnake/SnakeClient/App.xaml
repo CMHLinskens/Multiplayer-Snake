@@ -9,7 +9,7 @@
         <DataTemplate DataType="{x:Type viewModels:LoginViewModel}">
             <views:LoginView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type viewModels:TabViewModel}">
+        <DataTemplate DataType="{x:Type viewModels:TabControlViewModel}">
             <!--Should be TabView-->
             <views:TopBarView/>
         </DataTemplate>

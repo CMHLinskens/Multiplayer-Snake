@@ -5,9 +5,18 @@ VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiplayerSnake", "MultiplayerSnake\MultiplayerSnake.csproj", "{3F09E8A5-CB2C-44B7-81E7-CB9924F3CFED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{1C896F4B-CAA8-430B-B065-B1F041A21044}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Utils", "Utils\Utils.shproj", "{DDAD3A97-8CC2-4BC7-8F38-FABAE9B28645}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeClient", "SnakeClient\SnakeClient.csproj", "{40121246-5607-4F81-A8F6-49008BB8AA66}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Utils\Utils.projitems*{1c896f4b-caa8-430b-b065-b1f041a21044}*SharedItemsImports = 5
+		Utils\Utils.projitems*{3f09e8a5-cb2c-44b7-81e7-cb9924f3cfed}*SharedItemsImports = 5
+		Utils\Utils.projitems*{ddad3a97-8cc2-4bc7-8f38-fabae9b28645}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -17,6 +26,10 @@ Global
 		{3F09E8A5-CB2C-44B7-81E7-CB9924F3CFED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F09E8A5-CB2C-44B7-81E7-CB9924F3CFED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F09E8A5-CB2C-44B7-81E7-CB9924F3CFED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C896F4B-CAA8-430B-B065-B1F041A21044}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C896F4B-CAA8-430B-B065-B1F041A21044}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C896F4B-CAA8-430B-B065-B1F041A21044}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C896F4B-CAA8-430B-B065-B1F041A21044}.Release|Any CPU.Build.0 = Release|Any CPU
 		{40121246-5607-4F81-A8F6-49008BB8AA66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{40121246-5607-4F81-A8F6-49008BB8AA66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40121246-5607-4F81-A8F6-49008BB8AA66}.Release|Any CPU.ActiveCfg = Release|Any CPU
