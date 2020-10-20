@@ -9,7 +9,7 @@ namespace Server
     {
         private TcpListener listener;
         private static List<Client> clients;
-        private static Dictionary<string, string> savedAccounts; // <username, password>
+        private static List<Account> accounts;
 
         static void Main(string[] args)
         {
@@ -22,22 +22,50 @@ namespace Server
          */
         public void StartListen()
         {
-            savedAccounts = LoadTestAccounts();
+            accounts = FileReadWriter.RetrieveAllAccounts();
+            if(accounts.Count <= 0) // test
+                LoadTestAccounts(); // test
             clients = new List<Client>();
             listener = new TcpListener(IPAddress.Any, 1330);
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(Connect), null);
-            Console.ReadLine();
+
+            string input = "";
+            while(input != "quit")
+            {
+                Console.WriteLine("Commands:" +
+                    "\n- quit");
+                input = Console.ReadLine();
+                switch (input)
+                {
+                    case "quit":
+                        FileReadWriter.SaveAllAccounts(accounts);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         // Loads hardcoded accounts for testing.
-        private Dictionary<string, string> LoadTestAccounts()
+        private void LoadTestAccounts()
         {
-            Dictionary<string, string> accounts = new Dictionary<string, string>();
-            accounts.Add("Kees", "123");
-            accounts.Add("Frank", "123");
-            accounts.Add("Piet", "123");
-            return accounts;
+            accounts.Add(new Account(GenerateUniqueID(), "Kees", "123"));
+            accounts.Add(new Account(GenerateUniqueID(), "Piet", "123"));
+        }
+
+        /*
+         * Generates an random unique ID for a new account.
+         */
+        private string GenerateUniqueID()
+        {
+            Random random = new Random();
+            string id = "";
+            for (int i = 0; i < 10; i++)
+            {
+                id += Convert.ToChar(random.Next(48, 122));
+            }
+            return id;
         }
 
         /*
@@ -75,11 +103,11 @@ namespace Server
          */
         internal static bool CheckCredentials(string username, string password)
         {
-            foreach(var name in savedAccounts.Keys)
+            foreach(var acc in accounts)
             {
-                if(name == username) // Check if username exits
+                if(acc.Username == username) // Check if username exits
                 {
-                    if(savedAccounts.GetValueOrDefault(username, "") == password) // Check if passwords match
+                    if(acc.Password == password) // Check if passwords match
                     {
                         return true;
                     }
