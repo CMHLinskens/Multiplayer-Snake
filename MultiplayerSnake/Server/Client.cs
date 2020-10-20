@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Net.Mail;
@@ -14,14 +15,14 @@ namespace Server
         private TcpClient tcpClient;
         private string username;
         private byte[] buffer = new byte[1024];
-
-        public NetworkStream GetStream() { return tcpClient.GetStream(); }
+        public NetworkStream stream { get; }
 
         public Client(TcpClient newTcpClient)
         {
             tcpClient = newTcpClient;
+            stream = tcpClient.GetStream();
             // Start reading from the stream.
-            tcpClient.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         /*
@@ -31,18 +32,23 @@ namespace Server
         {
             try
             {
-                int receivedBytes = tcpClient.GetStream().EndRead(ar);
+                int receivedBytes = stream.EndRead(ar);
                 string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
                 dynamic receivedData = JsonConvert.DeserializeObject(receivedText);
                 HandleData(receivedData);
             }
             catch (IOException)
             {
-                Disconnect();
+                Server.Disconnect(this);
+                return;
+            }
+            catch (RuntimeBinderException)
+            {
+                Server.Disconnect(this);
                 return;
             }
 
-            tcpClient.GetStream().BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
+            stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
 
         /*
@@ -57,30 +63,20 @@ namespace Server
             {
                 case "chat":
                     bytes = PackageWrapper.SerializeData(tag, new { message = $"{username}: {receivedData.data.message}" });
-                    Program.Broadcast(bytes);
+                    Server.Broadcast(bytes);
                     break;
                 case "login":
                     username = receivedData.data.username;
-                    if(Program.CheckCredentials(username, (string)receivedData.data.password))
+                    if(Server.CheckCredentials(username, (string)receivedData.data.password))
                         bytes = PackageWrapper.SerializeData("login/success", new { message = "Successfully logged in." });
                     else
                         bytes = PackageWrapper.SerializeData("login/error", new { message = "Username and/or password is incorrect." });
-                    tcpClient.GetStream().Write(bytes, 0, bytes.Length);
+                    stream.Write(bytes, 0, bytes.Length);
                     break;
                 default:
                     Console.WriteLine($"No handling found for tag: {tag}");
                     break;
             }
-        }
-
-        /*
-         * This method closes the stream and removes itself from the server.
-         */
-        private void Disconnect()
-        {
-            tcpClient.GetStream().Dispose();
-            tcpClient.Close();
-            Program.Disconnect(this);
         }
     }
 }

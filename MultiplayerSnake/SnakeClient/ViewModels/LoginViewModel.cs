@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace SnakeClient.ViewModels
 {
-    public class LoginViewModel : CustomObservableObject
+    class LoginViewModel : CustomObservableObject
     {
         private ShellViewModel shellViewModel;
 

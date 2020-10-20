@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace Server
 {
-    class Program
+    class Server
     {
         private TcpListener listener;
         private static List<Client> clients;
@@ -14,7 +14,7 @@ namespace Server
         static void Main(string[] args)
         {
             Console.WriteLine("Server start");
-            new Program().StartListen();
+            new Server().StartListen();
         }
 
         /*
@@ -57,6 +57,7 @@ namespace Server
         internal static void Disconnect(Client client)
         {
             clients.Remove(client);
+            client.stream.Close();
             Console.WriteLine($"Client disconnected");
         }
 
@@ -66,7 +67,7 @@ namespace Server
         internal static void Broadcast(byte[] bytes)
         {
             foreach (var client in clients)
-                client.GetStream().Write(bytes, 0, bytes.Length);
+                client.stream.Write(bytes, 0, bytes.Length);
         }
 
         /*
