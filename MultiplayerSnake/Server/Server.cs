@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace Server
 {
-    class Program
+    class Server
     {
         private TcpListener listener;
         private static List<Client> clients;
@@ -14,7 +14,7 @@ namespace Server
         static void Main(string[] args)
         {
             Console.WriteLine("Server start");
-            new Program().StartListen();
+            new Server().StartListen();
         }
 
         /*

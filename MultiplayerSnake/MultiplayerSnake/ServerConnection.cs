@@ -6,6 +6,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Utils;
 
 namespace MultiplayerSnake
@@ -28,18 +29,18 @@ namespace MultiplayerSnake
         public ServerConnection()
         {
             tcpClient = new TcpClient();
-            Connect(ipAddress, port);
+            //Connect(ipAddress, port);
         }
 
         /*
          * Connects the client to the server.
          * If unsuccessful try again for 3 times.
          */
-        private void Connect(string ipAddress, int port)
+        private async Task Connect(string ipAddress, int port)
         {
             try
             {
-                tcpClient.Connect(ipAddress, port);
+                await Task.Run(() => tcpClient.Connect(ipAddress, port));
 
                 if (tcpClient.Connected)
                     OnConnected();
@@ -49,7 +50,7 @@ namespace MultiplayerSnake
                 if (!tcpClient.Connected && totalConnectTries < maxReconnectingTries)
                 {
                     totalConnectTries++;
-                    Connect(ipAddress, port);
+                    await Task.Run(() => Connect(ipAddress, port));
                 }
                 else
                     OnDisconnect();
@@ -133,6 +134,7 @@ namespace MultiplayerSnake
          */
         public void Login(string username, string password)
         {
+            Connect(ipAddress, port)
             receivedLoginMessage = false;
             byte[] bytes = PackageWrapper.SerializeData("login", new { username = username, password = password });
             tcpClient.GetStream().Write(bytes, 0, bytes.Length);

@@ -57,11 +57,11 @@ namespace Server
             {
                 case "chat":
                     bytes = PackageWrapper.SerializeData(tag, new { message = $"{username}: {receivedData.data.message}" });
-                    Program.Broadcast(bytes);
+                    Server.Broadcast(bytes);
                     break;
                 case "login":
                     username = receivedData.data.username;
-                    if(Program.CheckCredentials(username, (string)receivedData.data.password))
+                    if(Server.CheckCredentials(username, (string)receivedData.data.password))
                         bytes = PackageWrapper.SerializeData("login/success", new { message = "Successfully logged in." });
                     else
                         bytes = PackageWrapper.SerializeData("login/error", new { message = "Username and/or password is incorrect." });
@@ -80,7 +80,7 @@ namespace Server
         {
             tcpClient.GetStream().Dispose();
             tcpClient.Close();
-            Program.Disconnect(this);
+            Server.Disconnect(this);
         }
     }
 }

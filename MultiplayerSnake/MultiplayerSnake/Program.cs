@@ -9,14 +9,14 @@ namespace MultiplayerSnake
         {
             ServerConnection sc = new ServerConnection();
 
-            while (!sc.IsLoggedIn())
+            while (true)
             {
                 Console.Write("Username: ");
                 string username = Console.ReadLine();
                 Console.Write("Password: ");
                 string password = Console.ReadLine();
 
-                sc.Login(username, password);
+                 sc.Login(username, password);
 
                 // Wait for the sc to connect
                 while (!sc.HasReceivedLoginMessage())
