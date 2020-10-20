@@ -6,9 +6,10 @@ using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Utils;
 
-namespace MultiplayerSnake
+namespace SnakeClient
 {
     class ServerConnection
     {
@@ -28,7 +29,7 @@ namespace MultiplayerSnake
         public ServerConnection()
         {
             tcpClient = new TcpClient();
-            Connect(ipAddress, port);
+            //Connect(ipAddress, port);
         }
 
         /*
@@ -52,7 +53,7 @@ namespace MultiplayerSnake
                     Connect(ipAddress, port);
                 }
                 else
-                    OnDisconnect();
+                    Disconnect();
             }
         }
 
@@ -67,7 +68,7 @@ namespace MultiplayerSnake
         /*
          * Gets called when connecting to server fails and when connection is lost.
          */
-        private void OnDisconnect()
+        public void Disconnect()
         {
             tcpClient.GetStream().Dispose();
             tcpClient.Close();
@@ -88,8 +89,7 @@ namespace MultiplayerSnake
             }
             catch (IOException)
             {
-                OnDisconnect();
-                return;
+                Disconnect();
             }
         }
 
@@ -133,6 +133,7 @@ namespace MultiplayerSnake
          */
         public void Login(string username, string password)
         {
+            Connect(ipAddress, port);
             receivedLoginMessage = false;
             byte[] bytes = PackageWrapper.SerializeData("login", new { username = username, password = password });
             tcpClient.GetStream().Write(bytes, 0, bytes.Length);

@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Threading;
 
-namespace MultiplayerSnake
+namespace SnakeClient
 {
-    public class Program
+    class Program
     {
+        public ServerConnection sc { get; }
+
         public Program()
         {
-
+            sc = new ServerConnection();
         }
+
         public bool Login(string username, string password)
         {
-            ServerConnection sc = new ServerConnection();
-
             sc.Login(username, password);
 
             // Wait for the sc to connect
@@ -22,13 +23,6 @@ namespace MultiplayerSnake
             }
 
             return sc.IsLoggedIn();
-
-            //string input = "";
-            //while (true)
-            //{
-            //    input = Console.ReadLine();
-            //    sc.SendChat(input);
-            //}
         }
     }
 }

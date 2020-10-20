@@ -1,14 +1,13 @@
-﻿using MultiplayerSnake;
-using SnakeClient.Utils;
+﻿using SnakeClient.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace SnakeClient.ViewModels
 {
-    public class ShellViewModel : CustomObservableObject
+    class ShellViewModel : CustomObservableObject
     {
-        public Program Program{ get; set; }
+        public Program Program { get; set; }
         public CustomObservableObject SelectedViewModel{ get; set; }
         
         public ShellViewModel()

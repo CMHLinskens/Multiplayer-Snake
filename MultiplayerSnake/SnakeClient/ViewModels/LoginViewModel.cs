@@ -8,7 +8,7 @@ using System.Windows.Input;
 
 namespace SnakeClient.ViewModels
 {
-    public class LoginViewModel : CustomObservableObject
+    class LoginViewModel : CustomObservableObject
     {
         private ShellViewModel shellViewModel;
 
@@ -37,6 +37,7 @@ namespace SnakeClient.ViewModels
         private void LoginFailed()
         {
             LoginMessage = "Please try again";
+            shellViewModel.Program.sc.Disconnect();
         }
 
         private void LoginSucceeded()
