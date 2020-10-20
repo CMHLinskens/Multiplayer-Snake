@@ -6,12 +6,12 @@
         xmlns:local="clr-namespace:SnakeClient"
         mc:Ignorable="d"
         Title="MainWindow" Height="540" Width="800">
-    <DockPanel>
+    <!--<DockPanel>
         <UserControl DockPanel.Dock="Top" Content="{Binding TopBarViewModel}"/>
-        <UserControl DockPanel.Dock="Bottom" Content="{Binding SelectedViewModel}">
             
         </UserControl>        
-    </DockPanel>
-    
+    </DockPanel>-->
+
+    <UserControl Content="{Binding SelectedViewModel}"/>
 
 </Window>

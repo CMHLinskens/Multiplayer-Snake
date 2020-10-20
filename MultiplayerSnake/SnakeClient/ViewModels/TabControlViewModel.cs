@@ -9,7 +9,7 @@ namespace SnakeClient.ViewModels
     {
         public LobbyTabViewModel LobbyTabViewModel { get; set; }
         public ChatTabViewModel ChatTabViewModel { get; set; }
-        public TabControlViewModel()
+        public TabControlViewModel(ShellViewModel shellViewModel)
         {
             LobbyTabViewModel = new LobbyTabViewModel();
             ChatTabViewModel = new ChatTabViewModel();

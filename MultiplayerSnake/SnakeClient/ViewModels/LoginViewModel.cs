@@ -3,6 +3,7 @@ using SnakeClient.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace SnakeClient.ViewModels
@@ -15,18 +16,21 @@ namespace SnakeClient.ViewModels
 
         //PasswordBox does not support databinding,
         //which is why a TextBox is currently used
-        public string Password { get; set; }
+        public string Password { get; set; } = "123";
         public string LoginMessage { get; set; }
         public ICommand LoginCommand { get; set; }
         public LoginViewModel(ShellViewModel shellViewModel)
         {
             this.shellViewModel = shellViewModel;
-            LoginCommand = new RelayCommand(() => Login());
+            LoginCommand = new RelayCommand(async () => await LoginAsync());
         }
 
-        private async void Login()
+        private async Task LoginAsync()
         {
-            //ServerConnection Login Request, preferably boolean for async or something
+            if (await Task.Run(() => shellViewModel.Program.Login(Username, Password)))
+                LoginSucceeded();
+            else
+                LoginFailed();
 
         }
 
@@ -37,7 +41,8 @@ namespace SnakeClient.ViewModels
 
         private void LoginSucceeded()
         {
-            
+            LoginMessage = "";
+            this.shellViewModel.Initialize();
         }
     }
 }

@@ -10,7 +10,7 @@
             <views:LoginView/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:TabControlViewModel}">
-            <!--Should be TabView-->
+            <!--Should be TabControlView-->
             <views:TopBarView/>
         </DataTemplate>
     </Application.Resources>

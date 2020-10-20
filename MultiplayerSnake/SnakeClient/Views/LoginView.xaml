@@ -13,6 +13,7 @@
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -40,7 +41,10 @@
         <PasswordBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" MinWidth="200"/>
 
         <!--Row 5-->
-        <Button Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Height="50" Content="Login" Command="{Binding LoginCommand}"/>
+        <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding LoginMessage}"/>
+
+        <!--Row 6-->
+        <Button Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Height="50" Content="Login" Command="{Binding LoginCommand}"/>
 
     </Grid>
 </UserControl>
