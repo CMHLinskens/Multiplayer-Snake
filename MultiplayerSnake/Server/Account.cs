@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -22,6 +23,19 @@ namespace Server
             Password = password;
             GamesWon = 0;
             GamesLost = 0;
+        }
+
+        /*
+         * Use this method only for parsing data read from the saved-accounts.json file
+         */
+        [JsonConstructor]
+        public Account(string iD, string username, string password, int gamesWon, int gamesLost)
+        {
+            ID = iD;
+            Username = username;
+            Password = password;
+            GamesWon = gamesWon;
+            GamesLost = gamesLost;
         }
     }
 }

@@ -29,7 +29,6 @@ namespace SnakeClient
         public ServerConnection()
         {
             tcpClient = new TcpClient();
-            //Connect(ipAddress, port);
         }
 
         /*
@@ -78,7 +77,6 @@ namespace SnakeClient
             }
             catch (ObjectDisposedException)
             {
-
             }
         }
 
@@ -126,6 +124,24 @@ namespace SnakeClient
                     Disconnect();
                     Console.WriteLine($"{data.data.message}");
                     break;
+                case "create/success":
+                    // Created lobby on server.
+                    break;
+                case "create/error":
+                    // Unable to create lobby on server.
+                    break;
+                case "join/success":
+                    // Joined the lobby on server.
+                    break;
+                case "join/error":
+                    // Unable to join lobby.
+                    break;
+                case "refresh/fragment":
+                    // Received a fragment with 2 lobbies inside.
+                    break;
+                case "refresh/success":
+                    // Received last of the lobby list.
+                    break;
                 default:
                     Console.WriteLine($"No handling found for tag: {tag}");
                     break;
@@ -134,12 +150,26 @@ namespace SnakeClient
 
         #region // Writer functions
         /*
+         * Helper function for sending packets to server.
+         */
+        private void SendPacket(byte[] bytes)
+        {
+            tcpClient.GetStream().Write(bytes, 0, bytes.Length);
+        }
+        /*
          * Send chat message to server.
          */
         public void SendChat(string input)
         {
-            byte[] bytes = PackageWrapper.SerializeData("chat", new { message = input });
-            tcpClient.GetStream().Write(bytes, 0, bytes.Length);
+            SendPacket(PackageWrapper.SerializeData("chat", new { message = input }));
+        }
+        /*
+         * Sends the new user credentials to the server to create a new account.
+         */
+        public void Register(string username, string password)
+        {
+            Connect(ipAddress, port);
+            SendPacket(PackageWrapper.SerializeData("register", new { username = username, password = password }));
         }
         /*
          * Sends the user credentials to the server to login.
@@ -148,16 +178,35 @@ namespace SnakeClient
         {
             Connect(ipAddress, port);
             receivedLoginMessage = false;
-            byte[] bytes = PackageWrapper.SerializeData("login", new { username = username, password = password });
-            tcpClient.GetStream().Write(bytes, 0, bytes.Length);
+            SendPacket(PackageWrapper.SerializeData("login", new { username = username, password = password }));
+        }
+        /*
+         * Creates a new lobby at the server.
+         */
+        public void CreateLobby(string lobbyName, string gameOwner)
+        {
+            SendPacket(PackageWrapper.SerializeData("create", new { lobbyName = lobbyName, gameOwner = gameOwner}));
         }
         /*
          * Connects the client to the lobby with the same name.
          */
-        public void ConnectToLobby(string lobbyName, string password)
+        public void ConnectToLobby(string lobbyName, string playerName)
         {
-            byte[] bytes = PackageWrapper.SerializeData("join", new { lobbyName = lobbyName, password = password });
-            tcpClient.GetStream().Write(bytes, 0, bytes.Length);
+            SendPacket(PackageWrapper.SerializeData("join", new { lobbyName = lobbyName, playerName = playerName }));
+        }
+        /*
+         * Notifies the server to send current list of active lobbies to this client.
+         */
+        public void RefreshLobbyList()
+        {
+            SendPacket(PackageWrapper.SerializeData("refresh", new { }));
+        }
+        /*
+         * Asks the server the send the next fragment of the list.
+         */
+        public void GetNextLobbyListFragment()
+        {
+            SendPacket(PackageWrapper.SerializeData("refresh/next", new { }));
         }
         #endregion
     }

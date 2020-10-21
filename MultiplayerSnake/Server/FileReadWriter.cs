@@ -8,6 +8,9 @@ namespace Server
 {
     internal static class FileReadWriter
     {
+        /*
+         * Saves all modified and new accounts to the saved-accounts.json file.
+         */
         public static void SaveAllAccounts(List<Account> accounts)
         {
             using (var file = File.CreateText(@"..\data\saved-accounts.json"))
@@ -18,6 +21,9 @@ namespace Server
             }
         }
 
+        /*
+         * Retrieves all saved accounts in the saved-accounts.json file.
+         */
         public static List<Account> RetrieveAllAccounts()
         {
             if (File.Exists(@"..\data\saved-accounts.json"))

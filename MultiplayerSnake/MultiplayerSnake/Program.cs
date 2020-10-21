@@ -24,10 +24,32 @@ namespace MultiplayerSnake
             }
 
             string input = "";
+            int count = 0;
             while (true)
             {
+                Console.WriteLine("Commands:" +
+                    "\n-create" +
+                    "\n-join");
                 input = Console.ReadLine();
-                sc.SendChat(input);
+                switch (input)
+                {
+                    case "create":
+                        sc.CreateLobby("testroom" + count++, "testname" + count++);
+                        break;
+                    case "join":
+                        Console.Write("Room name: ");
+                        input = Console.ReadLine();
+                        sc.ConnectToLobby(input, "testname" + count++);
+                        break;
+                    case "refresh":
+                        //sc.RefreshLobbyList();
+                        break;
+                    case "refresh/fragment":
+                        break;
+                    default:
+                        Console.WriteLine("Unknown Command\n");
+                        break;
+                }
             }
         }
     }

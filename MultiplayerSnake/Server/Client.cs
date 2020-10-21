@@ -1,6 +1,7 @@
 ﻿using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
 using System.Net.Sockets;
@@ -15,6 +16,7 @@ namespace Server
         private TcpClient tcpClient;
         private string username;
         private byte[] buffer = new byte[1024];
+        public List<Lobby> tempRefreshLobbyList { get; set; } // Use this list to temporary store all lobbies to send them in packets to client.
         public NetworkStream stream { get; }
 
         public Client(TcpClient newTcpClient)
@@ -68,15 +70,50 @@ namespace Server
                 case "login":
                     username = receivedData.data.username;
                     if(Server.CheckCredentials(username, (string)receivedData.data.password))
-                        bytes = PackageWrapper.SerializeData("login/success", new { message = "Successfully logged in." });
+                        // User credentials matched.
+                        SendPacket(PackageWrapper.SerializeData("login/success", new { message = "Successfully logged in." }));
                     else
-                        bytes = PackageWrapper.SerializeData("login/error", new { message = "Username and/or password is incorrect." });
-                    stream.Write(bytes, 0, bytes.Length);
+                        // User credentials do not match with the saved accounts.
+                        SendPacket(PackageWrapper.SerializeData("login/error", new { message = "Username and/or password is incorrect." }));
+                    break;
+                case "register":
+                    // Register new account to the server.
+                    Server.AddAccount((string)receivedData.data.username, (string)receivedData.data.password);
+                    break;
+                case "create":
+                    if (Server.CreateLobby((string)receivedData.data.lobbyName, (string)receivedData.data.gameOwner))
+                        // Successfully created a new lobby.
+                        SendPacket(PackageWrapper.SerializeData("create/success", new { message = "Lobby created." }));
+                    else
+                        // Failed to create a new lobby.
+                        SendPacket(PackageWrapper.SerializeData("create/error", new { message = "Unable to make new lobby." }));
+                    break;
+                case "join":
+                    if (Server.JoinLobby((string)receivedData.data.lobbyName, (string)receivedData.data.playerName))
+                        // Successfully joined the lobby.
+                        SendPacket(PackageWrapper.SerializeData("join/success", new { message = "Joined the lobby." }));
+                    else
+                        // Failed to join the lobby.
+                        SendPacket(PackageWrapper.SerializeData("join/error", new { message = "Unable to join this lobby." }));
+                    break;
+                case "refresh":
+                    Server.StartSendLobbyList(this);
+                    break;
+                case "refresh/next":
+                    Server.SendLobbyListFragment(this);
                     break;
                 default:
                     Console.WriteLine($"No handling found for tag: {tag}");
                     break;
             }
+        }
+
+        /*
+         * Helper method for sending packets to the clients.
+         */
+        public void SendPacket(byte[] bytes)
+        {
+            stream.Write(bytes, 0, bytes.Length);
         }
     }
 }
