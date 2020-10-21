@@ -38,7 +38,7 @@
         <TextBlock  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="Password" HorizontalAlignment="Left"/>
 
         <!--Row 4-->
-        <PasswordBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" MinWidth="200"/>
+        <PasswordBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" MinWidth="200" PasswordChanged="PasswordBox_PasswordChanged"/>
 
         <!--Row 5-->
         <TextBlock Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding LoginMessage}"/>

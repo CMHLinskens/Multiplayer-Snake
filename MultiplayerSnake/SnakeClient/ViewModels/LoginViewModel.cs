@@ -2,6 +2,7 @@
 using SnakeClient.Utils;
 using System;
 using System.Collections.Generic;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -16,7 +17,7 @@ namespace SnakeClient.ViewModels
 
         //PasswordBox does not support databinding,
         //which is why a TextBox is currently used
-        public string Password { get; set; } = "123";
+        public string Password { private get; set; }
         public string LoginMessage { get; set; }
         public ICommand LoginCommand { get; set; }
         public LoginViewModel(ShellViewModel shellViewModel)
@@ -44,5 +45,6 @@ namespace SnakeClient.ViewModels
             LoginMessage = "";
             this.shellViewModel.Initialize();
         }
+
     }
 }
