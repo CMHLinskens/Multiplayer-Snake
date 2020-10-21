@@ -15,8 +15,6 @@ namespace SnakeClient.ViewModels
 
         public string Username { get; set; }
 
-        //PasswordBox does not support databinding,
-        //which is why a TextBox is currently used
         public string Password { private get; set; }
         public string LoginMessage { get; set; }
         public ICommand LoginCommand { get; set; }
@@ -32,7 +30,6 @@ namespace SnakeClient.ViewModels
                 LoginSucceeded();
             else
                 LoginFailed();
-
         }
 
         private void LoginFailed()
@@ -43,6 +40,7 @@ namespace SnakeClient.ViewModels
         private void LoginSucceeded()
         {
             LoginMessage = "";
+            this.shellViewModel.Name = Username;
             this.shellViewModel.Initialize();
         }
 

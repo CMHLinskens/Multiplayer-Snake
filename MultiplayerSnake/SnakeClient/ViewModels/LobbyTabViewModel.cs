@@ -15,7 +15,6 @@ namespace SnakeClient.ViewModels
 {
     class LobbyTabViewModel : CustomObservableObject
     {
-        private bool isRefreshing;
         private ShellViewModel shellViewModel;
         private ServerConnection serverConnection;
         private CustomObservableObject _selectedLobbyViewModel;
@@ -35,26 +34,41 @@ namespace SnakeClient.ViewModels
         public CustomObservableObject SelectedViewModel { get; set; }
         public LobbyTabViewModel(ShellViewModel shellViewModel)
         {
-            Lobbies = new ObservableCollection<LobbyViewModel> { new LobbyViewModel(new Lobby("test game", "E-chan", 2, MapSize.size16x16)) };
+            Lobbies = new ObservableCollection<LobbyViewModel> { new LobbyViewModel(new Lobby("test game", "E-chan", 2, MapSize.size16x16), shellViewModel) };
             this.shellViewModel = shellViewModel;
-            Task.Factory.StartNew(Refresh);
+            Task.Factory.StartNew(RefreshLoopAsync);
             CreateLobbyCommand = new RelayCommand(CreateLobby);
             this.serverConnection = shellViewModel.Program.sc;
         }
 
-        private void Refresh()
+        /*
+         * Refreshed lobby list every 2 seconds.
+         */
+        private async Task RefreshLoopAsync()
         {
-            while (isRefreshing)
+            while (shellViewModel.Program.sc.LoggedIn)
             {
-                //Insert code for getting lobbies
-                
-                Thread.Sleep(500);
+                // Refresh list
+                Lobbies = await Task.Run(() => Refresh());
+                // Wait 2 seconds
+                Thread.Sleep(2000);
             }
         }
+
+        private async Task<ObservableCollection<LobbyViewModel>> Refresh()
+        {
+            ObservableCollection<LobbyViewModel> lobbyViewModels = new ObservableCollection<LobbyViewModel>();
+            await Task.Run(() => shellViewModel.Program.RefreshLobbyList());
+            lobbyViewModels.Clear();
+            foreach (Lobby lobby in shellViewModel.Program.sc.Lobbies)
+                lobbyViewModels.Add(new LobbyViewModel(lobby, shellViewModel));
+            return lobbyViewModels;
+        }
+
         private void CreateLobby()
         {
             SelectedLobbyViewModel = null;
-            SelectedViewModel = new CreateLobbyViewModel();
+            SelectedViewModel = new CreateLobbyViewModel(shellViewModel);
             CreateButtonVisibility = Visibility.Hidden;
         }
     }

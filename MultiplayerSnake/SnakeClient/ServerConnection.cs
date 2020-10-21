@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using SnakeClient.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -21,14 +22,16 @@ namespace SnakeClient
         private int totalConnectTries;
         private readonly int maxReconnectingTries = 3;
         private byte[] buffer = new byte[1024];
-        private string username = "default";
-        private bool receivedLoginMessage = false;
-        private bool loggedIn = false;
-        private List<Lobby> lobbyListBuilder;
-        public List<Lobby> Lobbies { get { return lobbyListBuilder; } }
+        private ObservableCollection<Lobby> lobbyListBuilder;
+        public bool LoggedIn { get; private set; }
+        public ObservableCollection<Lobby> Lobbies { get { return lobbyListBuilder; } }
 
-        public bool HasReceivedLoginMessage() { return receivedLoginMessage; }
-        public bool IsLoggedIn() { return loggedIn; }
+        #region // Reply booleans
+        public bool ReceivedLoginMessage { get; private set; }
+        public bool ReceivedLobbyCreateMessage { get; private set; }
+        public bool ReceivedLobbyJoinMessage { get; private set; }
+        public bool ReceivedAllLobbies { get; private set; }
+        #endregion
 
         public ServerConnection()
         {
@@ -119,26 +122,30 @@ namespace SnakeClient
                     Console.WriteLine($"{data.data.message}");
                     break;
                 case "login/success":
-                    loggedIn = true;
-                    receivedLoginMessage = true;
+                    LoggedIn = true;
+                    ReceivedLoginMessage = true;
                     Console.WriteLine($"{data.data.message}");
                     break;
                 case "login/error":
-                    receivedLoginMessage = true;
+                    ReceivedLoginMessage = true;
                     Disconnect();
                     Console.WriteLine($"{data.data.message}");
                     break;
                 case "create/success":
                     // Created lobby on server.
+                    ReceivedLobbyCreateMessage = true;
                     break;
                 case "create/error":
                     // Unable to create lobby on server.
+                    ReceivedLobbyCreateMessage = true;
                     break;
                 case "join/success":
                     // Joined the lobby on server.
+                    ReceivedLobbyJoinMessage = true;
                     break;
                 case "join/error":
                     // Unable to join lobby.
+                    ReceivedLobbyJoinMessage = true;
                     break;
                 case "leave/success":
                     // Left the lobby on server.
@@ -154,8 +161,7 @@ namespace SnakeClient
                 case "refresh/success":
                     // Received last of the lobby list.
                     AddLobbies(data.data.lobbies);
-                    foreach (var lobby in Lobbies)
-                        Console.WriteLine(lobby);
+                    ReceivedAllLobbies = true;
                     break;
                 default:
                     Console.WriteLine($"No handling found for tag: {tag}");
@@ -170,7 +176,7 @@ namespace SnakeClient
         {
             foreach (dynamic lobby in ((JArray)newLobbies).Children())
             {
-                List<Player> players = new List<Player>();
+                ObservableCollection<Player> players = new ObservableCollection<Player>();
                 foreach (dynamic player in ((JArray)lobby.Players).Children())
                     players.Add(new Player((string)player.Name));
                 lobbyListBuilder.Add(new Lobby((string)lobby.Name, players, (bool)lobby.IsInGame, (int)lobby.MaxPlayers, (string)lobby.GameOwner, (MapSize)lobby.MapSize));
@@ -206,7 +212,7 @@ namespace SnakeClient
         public void Login(string username, string password)
         {
             Connect(ipAddress, port);
-            receivedLoginMessage = false;
+            ReceivedLoginMessage = false;
             SendPacket(PackageWrapper.SerializeData("login", new { username = username, password = password }));
         }
         /*
@@ -214,6 +220,7 @@ namespace SnakeClient
          */
         public void CreateLobby(string lobbyName, string gameOwner, int maxPlayers, MapSize mapSize)
         {
+            ReceivedLobbyCreateMessage = false;
             SendPacket(PackageWrapper.SerializeData("create", new { lobbyName = lobbyName, gameOwner = gameOwner, maxPlayers = maxPlayers, mapSize = mapSize }));
         }
         /*
@@ -221,6 +228,7 @@ namespace SnakeClient
          */
         public void ConnectToLobby(string lobbyName, string playerName)
         {
+            ReceivedLobbyJoinMessage = false;
             SendPacket(PackageWrapper.SerializeData("join", new { lobbyName = lobbyName, playerName = playerName }));
         }
         /*
@@ -235,6 +243,8 @@ namespace SnakeClient
          */
         public void RefreshLobbyList()
         {
+            ReceivedAllLobbies = false;
+            lobbyListBuilder = new ObservableCollection<Lobby>();
             SendPacket(PackageWrapper.SerializeData("refresh", new { }));
         }
         /*

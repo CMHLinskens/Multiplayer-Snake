@@ -1,12 +1,14 @@
 ﻿using SnakeClient.Utils;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 
 namespace SnakeClient.ViewModels
 {
     class ShellViewModel : CustomObservableObject
     {
+        public string Name { get; set; }
         public Program Program { get; set; }
         public CustomObservableObject SelectedViewModel{ get; set; }
         

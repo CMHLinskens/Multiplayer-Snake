@@ -1,6 +1,7 @@
 ﻿using SnakeClient.Utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text;
 using Utils;
 
@@ -9,7 +10,7 @@ namespace SnakeClient.Models
     class Lobby : CustomObservableObject
     {
         public string Name { get; set; }
-        public List<Player> Players { get; set; }
+        public ObservableCollection<Player> Players { get; set; }
         public bool IsInGame { get; set; }
         public int MaxPlayers { get; set; }
         public string GameOwner { get; set; }
@@ -19,7 +20,7 @@ namespace SnakeClient.Models
         public Lobby(string name, string creator, int maxPlayers, MapSize mapSize)
         {
             Name = name;
-            Players = new List<Player>();
+            Players = new ObservableCollection<Player>();
             Players.Add(new Player(creator));
             IsInGame = false;
             MaxPlayers = maxPlayers;
@@ -30,7 +31,7 @@ namespace SnakeClient.Models
         /*
          * Constructor for parsing data from received lobbies from refresh command.
          */
-        public Lobby(string name, List<Player> players, bool isInGame, int maxPlayers, string gameOwner, MapSize mapSize)
+        public Lobby(string name, ObservableCollection<Player> players, bool isInGame, int maxPlayers, string gameOwner, MapSize mapSize)
         {
             Name = name;
             Players = players;

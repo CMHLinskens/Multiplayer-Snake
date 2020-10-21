@@ -19,7 +19,6 @@ namespace MultiplayerSnake
         private int totalConnectTries;
         private readonly int maxReconnectingTries = 3;
         private byte[] buffer = new byte[1024];
-        private string username = "default";
         private bool receivedLoginMessage = false;
         private bool loggedIn = false;
         private List<Lobby> lobbyListBuilder;
