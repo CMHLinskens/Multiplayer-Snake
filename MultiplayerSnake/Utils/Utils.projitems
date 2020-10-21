@@ -9,6 +9,8 @@
     <Import_RootNamespace>Utils</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Direction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MapSize.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PackageWrapper.cs" />
   </ItemGroup>
 </Project>

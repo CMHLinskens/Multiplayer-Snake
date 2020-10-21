@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using Utils;
 
 namespace Server
 {
@@ -10,6 +11,7 @@ namespace Server
         private TcpListener listener;
         private static List<Client> clients;
         private static List<Account> accounts;
+        private static List<Lobby> lobbies;
 
         static void Main(string[] args)
         {
@@ -25,6 +27,8 @@ namespace Server
             accounts = FileReadWriter.RetrieveAllAccounts();
             if(accounts.Count <= 0) // test
                 LoadTestAccounts(); // test
+            lobbies = new List<Lobby>();
+
             clients = new List<Client>();
             listener = new TcpListener(IPAddress.Any, 1330);
             listener.Start();
@@ -57,7 +61,7 @@ namespace Server
         /*
          * Generates an random unique ID for a new account.
          */
-        private string GenerateUniqueID()
+        private static string GenerateUniqueID()
         {
             Random random = new Random();
             string id = "";
@@ -84,9 +88,21 @@ namespace Server
          */
         internal static void Disconnect(Client client)
         {
-            clients.Remove(client);
-            client.stream.Close();
+            try
+            {
+                clients.Remove(client);
+                client.stream.Close();
+            }
+            catch (IndexOutOfRangeException) { }
             Console.WriteLine($"Client disconnected");
+        }
+
+        /*
+         * Adds an new account to the server.
+         */
+        internal static void AddAccount(string username, string password)
+        {
+            accounts.Add(new Account(GenerateUniqueID(), username, password));
         }
 
         /*
@@ -95,7 +111,66 @@ namespace Server
         internal static void Broadcast(byte[] bytes)
         {
             foreach (var client in clients)
-                client.stream.Write(bytes, 0, bytes.Length);
+                client.SendPacket(bytes);
+        }
+
+        /*
+         * Creates a new lobby.
+         */
+        internal static bool CreateLobby(string lobbyName, string gameOwner)
+        {
+            foreach(var lobby in lobbies)
+                if (lobby.Name == lobbyName)
+                    // Lobby with this name already exists.
+                    return false;
+
+            lobbies.Add(new Lobby(lobbyName, gameOwner, 4, Utils.MapSize.size16x16));
+            Console.WriteLine(lobbies[lobbies.Count-1]);
+            return true;
+        }
+
+        /*
+         * Connects the new player to the lobby.
+         */
+        internal static bool JoinLobby(string lobbyName, string playerName)
+        {
+            foreach (var lobby in lobbies)
+                if (lobby.Name == lobbyName)
+                    return lobby.AddPlayer(playerName);
+
+            // Lobby does not exist
+            return false;
+        }
+
+        /*
+         * Start sending the lobbies in fragments to client.
+         */
+        internal static void StartSendLobbyList(Client client)
+        {
+            client.tempRefreshLobbyList = new List<Lobby>(lobbies);
+            SendLobbyListFragment(client);
+            //byte[] bytes = PackageWrapper.SerializeData("refresh/success", new { lobbies = lobbies });
+            
+        }
+
+        /*
+         * Sends a fragment of 2 lobbies to the client.
+         * If there are 2 or less left, send /success message with the last lobbies.
+         */
+        internal static void SendLobbyListFragment(Client client)
+        {
+            if(client.tempRefreshLobbyList.Count > 2)
+            {
+                Lobby[] lobbyListFragment = { client.tempRefreshLobbyList[0], client.tempRefreshLobbyList[1] };
+                client.SendPacket(PackageWrapper.SerializeData("refresh/fragment", new { lobbies = lobbyListFragment }));
+                client.tempRefreshLobbyList.RemoveAt(0);
+                client.tempRefreshLobbyList.RemoveAt(1);
+            }
+            else
+            {
+                client.SendPacket(PackageWrapper.SerializeData("refresh/success", new { lobbies = client.tempRefreshLobbyList }));
+                client.tempRefreshLobbyList.Clear();
+            }
         }
 
         /*
@@ -109,11 +184,11 @@ namespace Server
                 {
                     if(acc.Password == password) // Check if passwords match
                     {
-                        return true;
+                        return true; // Match found
                     }
                 }
             }
-            return false;
+            return false; // No match found
         }
     }
 }
