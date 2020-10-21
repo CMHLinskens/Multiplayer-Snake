@@ -18,10 +18,21 @@ namespace SnakeClient.ViewModels
         private bool isRefreshing;
         private ShellViewModel shellViewModel;
         private ServerConnection serverConnection;
+        private CustomObservableObject _selectedLobbyViewModel;
         public Visibility CreateButtonVisibility { get; set; } = Visibility.Visible;
         public ObservableCollection<LobbyViewModel> Lobbies{ get; set; }
         public ICommand CreateLobbyCommand { get; set; }
-        public CustomObservableObject SelectedLobbyViewModel { get; set; }
+        public CustomObservableObject SelectedLobbyViewModel
+        {
+            get { return _selectedLobbyViewModel; }
+            set
+            {
+                _selectedLobbyViewModel = value;
+                SelectedViewModel = value;
+                CreateButtonVisibility = Visibility.Visible;
+            }
+        }
+        public CustomObservableObject SelectedViewModel { get; set; }
         public LobbyTabViewModel(ShellViewModel shellViewModel)
         {
             Lobbies = new ObservableCollection<LobbyViewModel> { new LobbyViewModel(new Lobby("test game", "E-chan", 2, MapSize.size16x16)) };
@@ -42,7 +53,8 @@ namespace SnakeClient.ViewModels
         }
         private void CreateLobby()
         {
-            SelectedLobbyViewModel = new CreateLobbyViewModel();
+            SelectedLobbyViewModel = null;
+            SelectedViewModel = new CreateLobbyViewModel();
             CreateButtonVisibility = Visibility.Hidden;
         }
     }
