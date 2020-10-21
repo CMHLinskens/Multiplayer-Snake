@@ -31,7 +31,7 @@ namespace Server
          */
         public bool AddPlayer(string playerName)
         {
-            if(Players.Count >= MaxPlayers)
+            if(Players.Count < MaxPlayers)
             {
                 Players.Add(new Player(playerName));
                 Console.WriteLine(this);
@@ -40,6 +40,19 @@ namespace Server
             return false;
         }
 
+        /*
+         * Removes the player from the lobby if the player is currently in this lobby.
+         */
+        internal bool RemovePlayer(string playerName)
+        {
+            foreach (var player in Players)
+                if (player.Name == playerName)
+                {
+                    Players.Remove(player);
+                    return true;
+                }
+            return false;
+        }
         public override string ToString()
         {
             string playersString = "";
@@ -49,5 +62,6 @@ namespace Server
             }
             return $"Lobby name: {Name} Players: {playersString} GameOwner: {GameOwner}";
         }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Utils;
 
 namespace MultiplayerSnake
 {
@@ -8,6 +9,7 @@ namespace MultiplayerSnake
         static void Main(string[] args)
         {
             ServerConnection sc = new ServerConnection();
+            string name = GeneratePlayerNameTest();
 
             while (!sc.IsLoggedIn())
             {
@@ -28,29 +30,48 @@ namespace MultiplayerSnake
             while (true)
             {
                 Console.WriteLine("Commands:" +
-                    "\n-create" +
-                    "\n-join");
+                    "\n- create" +
+                    "\n- join" +
+                    "\n- leave" +
+                    "\n- refresh");
                 input = Console.ReadLine();
                 switch (input)
                 {
                     case "create":
-                        sc.CreateLobby("testroom" + count++, "testname" + count++);
+                        Console.Write("Room name: ");
+                        string inputName = Console.ReadLine();
+                        Console.Write("Room name: ");
+                        string inputPlayers = Console.ReadLine();
+                        Console.Write("Room name: ");
+                        string inputMapSize = Console.ReadLine();
+                        sc.CreateLobby(inputName, name, int.Parse(inputPlayers), Enum.Parse(typeof(MapSize), inputMapSize));
                         break;
                     case "join":
                         Console.Write("Room name: ");
                         input = Console.ReadLine();
-                        sc.ConnectToLobby(input, "testname" + count++);
+                        sc.ConnectToLobby(input, name);
+                        break;
+                    case "leave":
+                        Console.Write("Room name: ");
+                        input = Console.ReadLine();
+                        sc.LeaveLobby(input, name);
                         break;
                     case "refresh":
-                        //sc.RefreshLobbyList();
-                        break;
-                    case "refresh/fragment":
                         break;
                     default:
                         Console.WriteLine("Unknown Command\n");
                         break;
                 }
             }
+        }
+
+        private static string GeneratePlayerNameTest()
+        {
+            Random random = new Random();
+            string name = "";
+            for (int i = 0; i < 5; i++)
+                name += Convert.ToChar(random.Next(97 ,122));
+            return name;
         }
     }
 }

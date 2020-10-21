@@ -36,8 +36,8 @@ namespace Server
             {
                 int receivedBytes = stream.EndRead(ar);
                 string receivedText = Encoding.ASCII.GetString(buffer, 0, receivedBytes);
-                dynamic receivedData = JsonConvert.DeserializeObject(receivedText);
-                HandleData(receivedData);
+                dynamic data = JsonConvert.DeserializeObject(receivedText);
+                HandleData(data);
             }
             catch (IOException)
             {
@@ -56,20 +56,20 @@ namespace Server
         /*
          * This method handles all the incoming data received by the OnRead method.
          */
-        private void HandleData(dynamic receivedData)
+        private void HandleData(dynamic data)
         {
-            Console.WriteLine(receivedData);
-            string tag = receivedData.tag;
+            Console.WriteLine(data);
+            string tag = data.tag;
             byte[] bytes;
             switch (tag)
             {
                 case "chat":
-                    bytes = PackageWrapper.SerializeData(tag, new { message = $"{username}: {receivedData.data.message}" });
+                    bytes = PackageWrapper.SerializeData(tag, new { message = $"{username}: {data.data.message}" });
                     Server.Broadcast(bytes);
                     break;
                 case "login":
-                    username = receivedData.data.username;
-                    if(Server.CheckCredentials(username, (string)receivedData.data.password))
+                    username = data.data.username;
+                    if(Server.CheckCredentials(username, (string)data.data.password))
                         // User credentials matched.
                         SendPacket(PackageWrapper.SerializeData("login/success", new { message = "Successfully logged in." }));
                     else
@@ -78,10 +78,10 @@ namespace Server
                     break;
                 case "register":
                     // Register new account to the server.
-                    Server.AddAccount((string)receivedData.data.username, (string)receivedData.data.password);
+                    Server.AddAccount((string)data.data.username, (string)data.data.password);
                     break;
                 case "create":
-                    if (Server.CreateLobby((string)receivedData.data.lobbyName, (string)receivedData.data.gameOwner))
+                    if (Server.CreateLobby((string)data.data.lobbyName, (string)data.data.gameOwner, (int)data.data.maxPlayers, Enum.Parse(typeof(MapSize), data.data.mapSize)))
                         // Successfully created a new lobby.
                         SendPacket(PackageWrapper.SerializeData("create/success", new { message = "Lobby created." }));
                     else
@@ -89,17 +89,27 @@ namespace Server
                         SendPacket(PackageWrapper.SerializeData("create/error", new { message = "Unable to make new lobby." }));
                     break;
                 case "join":
-                    if (Server.JoinLobby((string)receivedData.data.lobbyName, (string)receivedData.data.playerName))
+                    if (Server.JoinLobby((string)data.data.lobbyName, (string)data.data.playerName))
                         // Successfully joined the lobby.
                         SendPacket(PackageWrapper.SerializeData("join/success", new { message = "Joined the lobby." }));
                     else
                         // Failed to join the lobby.
                         SendPacket(PackageWrapper.SerializeData("join/error", new { message = "Unable to join this lobby." }));
                     break;
+                case "leave":
+                    if (Server.LeaveLobby((string)data.data.lobbyName, (string)data.data.playerName))
+                        // Successfully left the lobby.
+                        SendPacket(PackageWrapper.SerializeData("leave/success", new { message = "Left the lobby." }));
+                    else
+                        // Failed to leave lobby.
+                        SendPacket(PackageWrapper.SerializeData("leave/error", new { message = "Unable to leave the lobby." }));
+                    break;
                 case "refresh":
+                    // Start sending the lobby list to the client.
                     Server.StartSendLobbyList(this);
                     break;
                 case "refresh/next":
+                    // Send a fragment of the lobby list.
                     Server.SendLobbyListFragment(this);
                     break;
                 default:

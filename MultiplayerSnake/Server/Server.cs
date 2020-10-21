@@ -117,20 +117,20 @@ namespace Server
         /*
          * Creates a new lobby.
          */
-        internal static bool CreateLobby(string lobbyName, string gameOwner)
+        internal static bool CreateLobby(string lobbyName, string gameOwner, int maxPlayers, MapSize mapSize)
         {
             foreach(var lobby in lobbies)
                 if (lobby.Name == lobbyName)
                     // Lobby with this name already exists.
                     return false;
 
-            lobbies.Add(new Lobby(lobbyName, gameOwner, 4, Utils.MapSize.size16x16));
+            lobbies.Add(new Lobby(lobbyName, gameOwner, maxPlayers, mapSize));
             Console.WriteLine(lobbies[lobbies.Count-1]);
             return true;
         }
 
         /*
-         * Connects the new player to the lobby.
+         * Connects the player to the lobby.
          */
         internal static bool JoinLobby(string lobbyName, string playerName)
         {
@@ -143,14 +143,25 @@ namespace Server
         }
 
         /*
+         * Disconnects the player from the lobby
+         */
+        internal static bool LeaveLobby(string lobbyName, string playerName)
+        {
+            foreach (var lobby in lobbies)
+                if (lobby.Name == lobbyName)
+                    return lobby.RemovePlayer(playerName);
+
+            // Player is not in this lobby.
+            return false;
+        }
+
+        /*
          * Start sending the lobbies in fragments to client.
          */
         internal static void StartSendLobbyList(Client client)
         {
             client.tempRefreshLobbyList = new List<Lobby>(lobbies);
             SendLobbyListFragment(client);
-            //byte[] bytes = PackageWrapper.SerializeData("refresh/success", new { lobbies = lobbies });
-            
         }
 
         /*

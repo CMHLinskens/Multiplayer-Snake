@@ -180,9 +180,9 @@ namespace MultiplayerSnake
         /*
          * Creates a new lobby at the server.
          */
-        public void CreateLobby(string lobbyName, string gameOwner)
+        public void CreateLobby(string lobbyName, string gameOwner, int maxPlayers, MapSize mapSize)
         {
-            SendPacket(PackageWrapper.SerializeData("create", new { lobbyName = lobbyName, gameOwner = gameOwner }));
+            SendPacket(PackageWrapper.SerializeData("create", new { lobbyName = lobbyName, gameOwner = gameOwner, maxPlayers = maxPlayers, mapSize = mapSize.ToString() }));
         }
         /*
          * Connects the client to the lobby with the same name.
@@ -190,6 +190,13 @@ namespace MultiplayerSnake
         public void ConnectToLobby(string lobbyName, string playerName)
         {
             SendPacket(PackageWrapper.SerializeData("join", new { lobbyName = lobbyName, playerName = playerName }));
+        }
+        /*
+         * Disconnects the client from the lobby with the same name.
+         */
+        public void LeaveLobby(string lobbyName, string playerName)
+        {
+            SendPacket(PackageWrapper.SerializeData("leave", new { lobbyName = lobbyName, playerName = playerName }));
         }
         /*
          * Notifies the server to send current list of active lobbies to this client.
