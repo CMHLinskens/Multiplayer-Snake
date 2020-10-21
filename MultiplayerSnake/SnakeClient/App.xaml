@@ -19,5 +19,11 @@
         <DataTemplate DataType="{x:Type viewModels:ChatTabViewModel}">
             <views:ChatTabView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:CreateLobbyViewModel}">
+            <views:CreateLobbyView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:LobbyViewModel}">
+            <views:LobbyView/>
+        </DataTemplate>
     </Application.Resources>
 </Application>

@@ -34,7 +34,7 @@ namespace Server
                     using (var jsonTextReader = new JsonTextReader(file))
                     {
                         var serializer = new JsonSerializer();
-                        accounts = serializer.Deserialize<List<Account>>(jsonTextReader);
+                        accounts = serializer.Deserialize<List<Account>>(jsonTextReader) ?? new List<Account>();
                         jsonTextReader.Close();
                     }
                     file.Close();
