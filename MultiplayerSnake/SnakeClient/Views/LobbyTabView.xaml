@@ -21,9 +21,10 @@
         
         <!--Row 0-->
         <Button Grid.Column="0" Grid.Row="0" Margin="50, 5, 50, 5" Content="Create" FontSize="20" Command="{Binding CreateLobbyCommand}" Visibility="{Binding CreateButtonVisibility}"/>
+        <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding DebugMessage}"/>
 
         <!--Row 1-->
-        <ListView Grid.Column="0" Grid.Row="1" MinWidth="200" ItemsSource="{Binding Lobbies}">
+        <ListView Grid.Column="0" Grid.Row="1" MinWidth="200" ItemsSource="{Binding Lobbies}" SelectedItem="{Binding SelectedLobbyViewModel}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}"/>

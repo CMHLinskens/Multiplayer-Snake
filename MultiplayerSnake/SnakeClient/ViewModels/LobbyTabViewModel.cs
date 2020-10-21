@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using SnakeClient.Models;
 using SnakeClient.Utils;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Utils;
 
 namespace SnakeClient.ViewModels
 {
@@ -15,15 +17,18 @@ namespace SnakeClient.ViewModels
     {
         private bool isRefreshing;
         private ShellViewModel shellViewModel;
+        private ServerConnection serverConnection;
         public Visibility CreateButtonVisibility { get; set; } = Visibility.Visible;
         public ObservableCollection<LobbyViewModel> Lobbies{ get; set; }
         public ICommand CreateLobbyCommand { get; set; }
         public CustomObservableObject SelectedLobbyViewModel { get; set; }
         public LobbyTabViewModel(ShellViewModel shellViewModel)
         {
+            Lobbies = new ObservableCollection<LobbyViewModel> { new LobbyViewModel(new Lobby("test game", "E-chan", 2, MapSize.size16x16)) };
             this.shellViewModel = shellViewModel;
             Task.Factory.StartNew(Refresh);
             CreateLobbyCommand = new RelayCommand(CreateLobby);
+            this.serverConnection = shellViewModel.Program.sc;
         }
 
         private void Refresh()
@@ -31,6 +36,7 @@ namespace SnakeClient.ViewModels
             while (isRefreshing)
             {
                 //Insert code for getting lobbies
+                
                 Thread.Sleep(500);
             }
         }
