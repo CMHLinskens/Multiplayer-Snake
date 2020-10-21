@@ -36,7 +36,8 @@ namespace SnakeClient.ViewModels
         }
         private void CreateLobby()
         {
-
+            SelectedLobbyViewModel = new CreateLobbyViewModel();
+            CreateButtonVisibility = Visibility.Hidden;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Server
         public void StartListen()
         {
             accounts = FileReadWriter.RetrieveAllAccounts();
-            if(accounts.Count <= 0) // test
+            if (accounts.Count <= 0) // test
                 LoadTestAccounts(); // test
             clients = new List<Client>();
             listener = new TcpListener(IPAddress.Any, 1330);

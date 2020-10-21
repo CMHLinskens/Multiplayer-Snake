@@ -30,6 +30,6 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <UserControl Grid.Column="1" Grid.Row="1" Content="{Binding SelectedLobbyView}"/>
+        <UserControl Grid.Column="1" Grid.Row="1" Content="{Binding SelectedLobbyViewModel}"/>
     </Grid>
 </UserControl>
