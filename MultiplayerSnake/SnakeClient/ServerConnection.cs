@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SnakeClient.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,6 +24,8 @@ namespace SnakeClient
         private string username = "default";
         private bool receivedLoginMessage = false;
         private bool loggedIn = false;
+        private List<Lobby> lobbyListBuilder;
+        public List<Lobby> Lobbies { get { return lobbyListBuilder; } }
 
         public bool HasReceivedLoginMessage() { return receivedLoginMessage; }
         public bool IsLoggedIn() { return loggedIn; }
@@ -140,17 +144,36 @@ namespace SnakeClient
                     // Left the lobby on server.
                     break;
                 case "leave/error":
-                    // Unabel to leave the lobby.
+                    // Unable to leave the lobby.
                     break;
                 case "refresh/fragment":
                     // Received a fragment with 2 lobbies inside.
+                    AddLobbies(data.data.lobbies);
+                    GetNextLobbyListFragment();
                     break;
                 case "refresh/success":
                     // Received last of the lobby list.
+                    AddLobbies(data.data.lobbies);
+                    foreach (var lobby in Lobbies)
+                        Console.WriteLine(lobby);
                     break;
                 default:
                     Console.WriteLine($"No handling found for tag: {tag}");
                     break;
+            }
+        }
+
+        /*
+         * Helper function to build up the lobby list.
+         */
+        private void AddLobbies(dynamic newLobbies)
+        {
+            foreach (dynamic lobby in ((JArray)newLobbies).Children())
+            {
+                List<Player> players = new List<Player>();
+                foreach (dynamic player in ((JArray)lobby.Players).Children())
+                    players.Add(new Player((string)player.Name));
+                lobbyListBuilder.Add(new Lobby((string)lobby.Name, players, (bool)lobby.IsInGame, (int)lobby.MaxPlayers, (string)lobby.GameOwner, (MapSize)lobby.MapSize));
             }
         }
 
@@ -191,7 +214,7 @@ namespace SnakeClient
          */
         public void CreateLobby(string lobbyName, string gameOwner, int maxPlayers, MapSize mapSize)
         {
-            SendPacket(PackageWrapper.SerializeData("create", new { lobbyName = lobbyName, gameOwner = gameOwner, maxPlayers = maxPlayers, mapSize = mapSize.ToString() }));
+            SendPacket(PackageWrapper.SerializeData("create", new { lobbyName = lobbyName, gameOwner = gameOwner, maxPlayers = maxPlayers, mapSize = mapSize }));
         }
         /*
          * Connects the client to the lobby with the same name.

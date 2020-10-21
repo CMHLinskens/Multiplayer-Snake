@@ -1,12 +1,11 @@
-﻿using SnakeClient.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using Utils;
 
-namespace SnakeClient.Models
+namespace MultiplayerSnake
 {
-    class Lobby : CustomObservableObject
+    class Lobby
     {
         public string Name { get; set; }
         public List<Player> Players { get; set; }
@@ -16,6 +15,9 @@ namespace SnakeClient.Models
         public MapSize MapSize { get; set; }
         // public Game Game { get; set; }
 
+        /*
+         * Constructor for creating new lobbies.
+         */
         public Lobby(string name, string creator, int maxPlayers, MapSize mapSize)
         {
             Name = name;
@@ -28,7 +30,7 @@ namespace SnakeClient.Models
         }
 
         /*
-         * Constructor for parsing data from received lobbies from refresh command.
+         * Constructor for parsing data from receiving lobbies on a refresh command.
          */
         public Lobby(string name, List<Player> players, bool isInGame, int maxPlayers, string gameOwner, MapSize mapSize)
         {
@@ -40,32 +42,14 @@ namespace SnakeClient.Models
             MapSize = mapSize;
         }
 
-        /*
-         * Adds the new player to the lobby if the lobby is not full.
-         */
-        public bool AddPlayer(string playerName)
+        public override string ToString()
         {
-            if (Players.Count < MaxPlayers)
-            {
-                Players.Add(new Player(playerName));
-                Console.WriteLine(this);
-                return true;
-            }
-            return false;
-        }
-
-        /*
-         * Removes the player from the lobby if the player is currently in this lobby.
-         */
-        internal bool RemovePlayer(string playerName)
-        {
+            string playersString = "";
             foreach (var player in Players)
-                if (player.Name == playerName)
-                {
-                    Players.Remove(player);
-                    return true;
-                }
-            return false;
+            {
+                playersString += player.Name;
+            }
+            return $"Lobby name: {Name} Players: {playersString} GameOwner: {GameOwner}";
         }
     }
 }

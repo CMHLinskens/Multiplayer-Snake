@@ -83,8 +83,8 @@ namespace Server
                     break;
                 case "create":
                     // Determine the map size
-                    MapSize mapSize = (string)data.data.mapSize == "size16x16" ? MapSize.size16x16 : (string)data.data.mapSize == "size32x32" ? MapSize.size32x32 : MapSize.size32x32;
-                    if (Server.CreateLobby((string)data.data.lobbyName, (string)data.data.gameOwner, (int)data.data.maxPlayers, mapSize))
+                    //MapSize mapSize = (string)data.data.mapSize == "size16x16" ? MapSize.size16x16 : (string)data.data.mapSize == "size32x32" ? MapSize.size32x32 : MapSize.size32x32;
+                    if (Server.CreateLobby((string)data.data.lobbyName, (string)data.data.gameOwner, (int)data.data.maxPlayers, (MapSize)data.data.mapSize))
                         // Successfully created a new lobby.
                         SendPacket(PackageWrapper.SerializeData("create/success", new { message = "Lobby created." }));
                     else
