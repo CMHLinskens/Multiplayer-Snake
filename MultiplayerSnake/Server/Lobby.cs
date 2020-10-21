@@ -31,8 +31,14 @@ namespace Server
          */
         public bool AddPlayer(string playerName)
         {
+            // Check if max player count has been reached.
             if(Players.Count < MaxPlayers)
             {
+                // Check if someone with the same name is already in this lobby.
+                foreach(var player in Players)
+                    if (player.Name == playerName)
+                        return false;
+
                 Players.Add(new Player(playerName));
                 Console.WriteLine(this);
                 return true;

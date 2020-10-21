@@ -16,7 +16,7 @@ namespace SnakeClient.ViewModels
     class LobbyTabViewModel : CustomObservableObject
     {
         private ShellViewModel shellViewModel;
-        private ServerConnection serverConnection;
+        private string selectedLobbyName;
         private CustomObservableObject _selectedLobbyViewModel;
         public Visibility CreateButtonVisibility { get; set; } = Visibility.Visible;
         public ObservableCollection<LobbyViewModel> Lobbies{ get; set; }
@@ -26,6 +26,10 @@ namespace SnakeClient.ViewModels
             get { return _selectedLobbyViewModel; }
             set
             {
+                LobbyViewModel lobbyValue = value as LobbyViewModel;
+                if(lobbyValue != null)
+                    selectedLobbyName = lobbyValue.Name;
+                
                 _selectedLobbyViewModel = value;
                 SelectedViewModel = value;
                 CreateButtonVisibility = Visibility.Visible;
@@ -34,11 +38,11 @@ namespace SnakeClient.ViewModels
         public CustomObservableObject SelectedViewModel { get; set; }
         public LobbyTabViewModel(ShellViewModel shellViewModel)
         {
-            Lobbies = new ObservableCollection<LobbyViewModel> { new LobbyViewModel(new Lobby("test game", "E-chan", 2, MapSize.size16x16), shellViewModel) };
+            selectedLobbyName = "";
+            Lobbies = new ObservableCollection<LobbyViewModel> { new LobbyViewModel(new Lobby("TestLobby", "Test", 2, MapSize.size16x16), shellViewModel)};
             this.shellViewModel = shellViewModel;
             Task.Factory.StartNew(RefreshLoopAsync);
             CreateLobbyCommand = new RelayCommand(CreateLobby);
-            this.serverConnection = shellViewModel.Program.sc;
         }
 
         /*
@@ -55,19 +59,26 @@ namespace SnakeClient.ViewModels
             }
         }
 
+        /*
+         * Add the new retrieved lobbies to the GUI.
+         */
         private async Task<ObservableCollection<LobbyViewModel>> Refresh()
         {
             ObservableCollection<LobbyViewModel> lobbyViewModels = new ObservableCollection<LobbyViewModel>();
             await Task.Run(() => shellViewModel.Program.RefreshLobbyList());
-            lobbyViewModels.Clear();
             foreach (Lobby lobby in shellViewModel.Program.sc.Lobbies)
+            {
                 lobbyViewModels.Add(new LobbyViewModel(lobby, shellViewModel));
+                if (lobby.Name == selectedLobbyName)
+                    SelectedLobbyViewModel = lobbyViewModels[lobbyViewModels.Count - 1];
+            }
             return lobbyViewModels;
         }
 
         private void CreateLobby()
         {
             SelectedLobbyViewModel = null;
+            selectedLobbyName = "";
             SelectedViewModel = new CreateLobbyViewModel(shellViewModel);
             CreateButtonVisibility = Visibility.Hidden;
         }

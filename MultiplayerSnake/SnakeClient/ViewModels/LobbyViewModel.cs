@@ -32,8 +32,7 @@ namespace SnakeClient.ViewModels
             this.shellViewModel = shellViewModel;
             this.lobby = lobby;
             Name = this.lobby.Name;
-            Players = new ObservableCollection<Player>();
-            Players.Add(new Player(this.lobby.GameOwner));
+            Players = lobby.Players;
             IsInGame = false;
             MaxPlayers = this.lobby.MaxPlayers;
             Owner = this.lobby.GameOwner;
