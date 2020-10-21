@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Utils;
 
 namespace Server
@@ -13,7 +16,8 @@ namespace Server
         public int MaxPlayers { get; set; }
         public string GameOwner { get; set; }
         public MapSize MapSize { get; set; }
-        // public Game Game { get; set; }
+        [JsonIgnore]
+        public Game Game { get; set; }
         
         public Lobby(string name, string creator, int maxPlayers, MapSize mapSize)
         {
@@ -24,6 +28,7 @@ namespace Server
             MaxPlayers = maxPlayers;
             GameOwner = creator;
             MapSize = mapSize;
+            Game = new Game(this);
         }
 
         /*
@@ -60,6 +65,38 @@ namespace Server
                 }
             return false;
         }
+
+        /*
+         * Asks all players in this lobby to send their data.
+         */
+        public async Task<List<Direction>> RequestPlayerData()
+        {
+            // Asks all the clients for their next move.
+            foreach (var player in Players)
+            {
+                Server.GetClientWithUserName(player.Name).ReceivedNextMove = false;
+                Server.GetClientWithUserName(player.Name).SendPacket(PackageWrapper.SerializeData("game/move/request", new { }));
+            }
+
+            List<Direction> nextMoves = new List<Direction>();
+
+            // Wait for the data.
+            await Task.Run(() =>
+            {
+                foreach (var player in Players)
+                {
+                    while (!Server.GetClientWithUserName(player.Name).ReceivedNextMove) 
+                        Thread.Sleep(5);
+                    nextMoves.Add(Server.GetClientWithUserName(player.Name).NextMove);
+                }
+            });
+
+            return nextMoves;
+        }
+
+        /*
+         * Method used for testing output.
+         */
         public override string ToString()
         {
             string playersString = "";
@@ -69,6 +106,5 @@ namespace Server
             }
             return $"Lobby name: {Name} Players: {playersString} GameOwner: {GameOwner}";
         }
-
     }
 }

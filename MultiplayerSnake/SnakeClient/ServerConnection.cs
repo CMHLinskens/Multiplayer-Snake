@@ -77,6 +77,7 @@ namespace SnakeClient
          */
         private void Disconnect()
         {
+            LoggedIn = false;
             try
             {
                 tcpClient.GetStream().Dispose();
@@ -162,6 +163,15 @@ namespace SnakeClient
                     // Received last of the lobby list.
                     AddLobbies(data.data.lobbies);
                     ReceivedAllLobbies = true;
+                    break;
+                case "newOwner":
+                    // This client is the new owner of the lobby.
+                    break;
+                case "game/move/request":
+                    // Send the next desired move to the server.
+                    // TODO
+                    // retrieve the desired move direction.
+                    SendNextMove(Direction.down);
                     break;
                 default:
                     Console.WriteLine($"No handling found for tag: {tag}");
@@ -253,6 +263,27 @@ namespace SnakeClient
         public void GetNextLobbyListFragment()
         {
             SendPacket(PackageWrapper.SerializeData("refresh/next", new { }));
+        }
+        /*
+         * Start the game of the lobby that this client is in.
+         */
+        public void StartGame()
+        {
+            SendPacket(PackageWrapper.SerializeData("game/start", new { }));
+        }
+        /*
+         * Stop the game of the lobby that this client is in.
+         */
+        public void StopGame()
+        {
+            SendPacket(PackageWrapper.SerializeData("game/stop", new { }));
+        }
+        /*
+         * Sends the next desired move to the server.
+         */
+        public void SendNextMove(Direction move)
+        {
+            SendPacket(PackageWrapper.SerializeData("game/move/response", new { move = move }));
         }
         #endregion
     }

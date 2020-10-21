@@ -11,6 +11,7 @@ namespace Server
         private TcpListener listener;
         private static List<Client> clients;
         private static List<Account> accounts;
+        private static List<Account> availableAccounts;
         private static List<Lobby> lobbies;
 
         static void Main(string[] args)
@@ -27,6 +28,7 @@ namespace Server
             accounts = FileReadWriter.RetrieveAllAccounts();
             if (accounts.Count <= 0) // test
                 LoadTestAccounts(); // test
+            availableAccounts = new List<Account>(accounts);
             lobbies = new List<Lobby>();
 
             clients = new List<Client>();
@@ -88,6 +90,8 @@ namespace Server
          */
         internal static void DisconnectClient(Client client)
         {
+            if (client.Lobby != null) LeaveLobby(client.Lobby.Name, client.Account.Username, client);
+            if (client.Account != null) availableAccounts.Add(client.Account);
             try
             {
                 clients.Remove(client);
@@ -102,7 +106,9 @@ namespace Server
          */
         internal static void AddAccount(string username, string password)
         {
-            accounts.Add(new Account(GenerateUniqueID(), username, password));
+            Account newAccount = new Account(GenerateUniqueID(), username, password);
+            accounts.Add(newAccount);
+            availableAccounts.Add(newAccount);
         }
 
         /*
@@ -117,42 +123,104 @@ namespace Server
         /*
          * Creates a new lobby.
          */
-        internal static bool CreateLobby(string lobbyName, string gameOwner, int maxPlayers, MapSize mapSize)
+        internal static bool CreateLobby(string lobbyName, string gameOwner, int maxPlayers, MapSize mapSize, Client client)
         {
-            foreach(var lobby in lobbies)
+            if (client.Lobby != null) { return false; } // Client is already in a lobby.
+
+            foreach (var lobby in lobbies)
                 if (lobby.Name == lobbyName)
                     // Lobby with this name already exists.
                     return false;
 
-            lobbies.Add(new Lobby(lobbyName, gameOwner, maxPlayers, mapSize));
+            Lobby newLobby = new Lobby(lobbyName, gameOwner, maxPlayers, mapSize);
+            lobbies.Add(newLobby);
+            client.Lobby = newLobby;
             Console.WriteLine(lobbies[lobbies.Count-1]);
             return true;
         }
 
         /*
-         * Connects the player to the lobby.
+         * Connects the Client to the lobby.
          */
-        internal static bool JoinLobby(string lobbyName, string playerName)
+        internal static bool JoinLobby(string lobbyName, string playerName, Client client)
         {
+            if(client.Lobby != null) { return false; } // Client is already in a lobby.
+
             foreach (var lobby in lobbies)
                 if (lobby.Name == lobbyName)
-                    return lobby.AddPlayer(playerName);
+                {
+                    bool joinResult = lobby.AddPlayer(playerName);
+                    client.Lobby = joinResult ? lobby : null;
+                    return joinResult;
+                }
 
-            // Lobby does not exist
+            // Lobby does not exist.
             return false;
         }
 
         /*
-         * Disconnects the player from the lobby
+         * Disconnects the Client from the lobby.
+         * If the client is the current game owner of the lobby, pass it to the next player in de list.
          */
-        internal static bool LeaveLobby(string lobbyName, string playerName)
+        internal static bool LeaveLobby(string lobbyName, string playerName, Client client)
         {
+            if (client.Lobby == null) return false; // Client is not in any lobby.
+
             foreach (var lobby in lobbies)
                 if (lobby.Name == lobbyName)
-                    return lobby.RemovePlayer(playerName);
-
-            // Player is not in this lobby.
+                {
+                    bool leaveResult = lobby.RemovePlayer(playerName);
+                    if (leaveResult)
+                    {
+                        client.Lobby = null;
+                        if (lobby.GameOwner == playerName) // Check if this client was the game owner.
+                        {
+                            if (lobby.Players.Count > 0) // Check if there are any players left in this lobby.
+                            {
+                                string newGameOwner = lobby.Players[0].Name;
+                                // Send message to client to notify that he is the new game owner.
+                                GetClientWithUserName(newGameOwner).SendPacket(PackageWrapper.SerializeData("newOwner", new { }));
+                                lobby.GameOwner = newGameOwner;
+                            }
+                            else // If there is no-one left in the lobby, delete it.
+                                lobbies.Remove(lobby);
+                        }
+                    }
+                    return leaveResult;
+                }
+            // Client is not in this lobby.
             return false;
+        }
+
+        /*
+         * Start the game of the given lobby.
+         */
+        internal static void StartGame(Client client)
+        {
+            if (client.Lobby != null)
+                if (client.Lobby.GameOwner == client.Account.Username)
+                    client.Lobby.Game.StartGame();
+        }
+
+        /*
+         * Stop the game of the given lobby.
+         */
+        internal static void StopGame(Client client)
+        {
+            if(client.Lobby != null)
+                if (client.Lobby.GameOwner == client.Account.Username)
+                    client.Lobby.Game.StopGame();
+        }
+
+        /*
+         * Helper function for getting a client by name
+         */
+        internal static Client GetClientWithUserName(string username)
+        {
+            foreach (var client in clients)
+                if (client.Account.Username == username)
+                    return client;
+            return null; // No client with this account connected.
         }
 
         /*
@@ -187,14 +255,16 @@ namespace Server
         /*
          * Checks if received login credentials exits and are correct.
          */
-        internal static bool CheckCredentials(string username, string password)
+        internal static bool CheckCredentials(string username, string password, Client client)
         {
-            foreach(var acc in accounts)
+            foreach(var acc in availableAccounts)
             {
                 if(acc.Username == username) // Check if username exits
                 {
                     if(acc.Password == password) // Check if passwords match
                     {
+                        client.Account = acc;
+                        availableAccounts.Remove(acc);
                         return true; // Match found
                     }
                 }
