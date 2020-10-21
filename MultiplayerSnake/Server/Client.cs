@@ -41,12 +41,13 @@ namespace Server
             }
             catch (IOException)
             {
-                Server.Disconnect(this);
+                Server.DisconnectClient(this);
                 return;
             }
-            catch (RuntimeBinderException)
+            catch (RuntimeBinderException e)
             {
-                Server.Disconnect(this);
+                Console.WriteLine(e.StackTrace);
+                Server.DisconnectClient(this);
                 return;
             }
 
@@ -81,7 +82,9 @@ namespace Server
                     Server.AddAccount((string)data.data.username, (string)data.data.password);
                     break;
                 case "create":
-                    if (Server.CreateLobby((string)data.data.lobbyName, (string)data.data.gameOwner, (int)data.data.maxPlayers, Enum.Parse(typeof(MapSize), data.data.mapSize)))
+                    // Determine the map size
+                    MapSize mapSize = (string)data.data.mapSize == "size16x16" ? MapSize.size16x16 : (string)data.data.mapSize == "size32x32" ? MapSize.size32x32 : MapSize.size32x32;
+                    if (Server.CreateLobby((string)data.data.lobbyName, (string)data.data.gameOwner, (int)data.data.maxPlayers, mapSize))
                         // Successfully created a new lobby.
                         SendPacket(PackageWrapper.SerializeData("create/success", new { message = "Lobby created." }));
                     else

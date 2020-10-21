@@ -28,7 +28,7 @@ namespace MultiplayerSnake
         public ServerConnection()
         {
             tcpClient = new TcpClient();
-            Connect(ipAddress, port);
+            //Connect(ipAddress, port);
         }
 
         /*
@@ -108,6 +108,7 @@ namespace MultiplayerSnake
          */
         private void HandleData(dynamic data)
         {
+            Console.WriteLine(data);
             string tag = data.tag;
             switch (tag)
             {
@@ -175,6 +176,7 @@ namespace MultiplayerSnake
          */
         public void Login(string username, string password)
         {
+            Connect(ipAddress, port);
             receivedLoginMessage = false;
             SendPacket(PackageWrapper.SerializeData("login", new { username = username, password = password }));        }
         /*
