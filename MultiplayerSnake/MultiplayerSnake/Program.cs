@@ -26,7 +26,6 @@ namespace MultiplayerSnake
             }
 
             string input = "";
-            int count = 0;
             while (true)
             {
                 Console.WriteLine("Commands:" +
@@ -42,7 +41,7 @@ namespace MultiplayerSnake
                         string inputName = Console.ReadLine();
                         Console.Write("Player limit: ");
                         string inputPlayers = Console.ReadLine();
-                        sc.CreateLobby(inputName, name, int.Parse(inputPlayers), MapSize.size16x16);
+                        sc.CreateLobby(inputName, name, int.Parse(inputPlayers), MapSize.size32x32);
                         break;
                     case "join":
                         Console.Write("Room name: ");
@@ -55,6 +54,7 @@ namespace MultiplayerSnake
                         sc.LeaveLobby(input, name);
                         break;
                     case "refresh":
+                        sc.RefreshLobbyList();
                         break;
                     default:
                         Console.WriteLine("Unknown Command\n");
