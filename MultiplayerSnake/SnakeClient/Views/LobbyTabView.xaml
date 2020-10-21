@@ -27,7 +27,12 @@
         <ListView Grid.Column="0" Grid.Row="1" MinWidth="200" ItemsSource="{Binding Lobbies}" SelectedItem="{Binding SelectedLobbyViewModel}">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}"/>
+                        <Border BorderBrush="Black" BorderThickness="2" Width="200">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Name}"/>
+                        <TextBlock Text="{Binding MaxPlayers}" FontSize="14"/>
+                    </StackPanel>
+                        </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
