@@ -40,11 +40,9 @@ namespace MultiplayerSnake
                     case "create":
                         Console.Write("Room name: ");
                         string inputName = Console.ReadLine();
-                        Console.Write("Room name: ");
+                        Console.Write("Player limit: ");
                         string inputPlayers = Console.ReadLine();
-                        Console.Write("Room name: ");
-                        string inputMapSize = Console.ReadLine();
-                        sc.CreateLobby(inputName, name, int.Parse(inputPlayers), Enum.Parse(typeof(MapSize), inputMapSize));
+                        sc.CreateLobby(inputName, name, int.Parse(inputPlayers), MapSize.size16x16);
                         break;
                     case "join":
                         Console.Write("Room name: ");

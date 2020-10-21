@@ -86,7 +86,7 @@ namespace Server
         /*
          * Removes client from server.
          */
-        internal static void Disconnect(Client client)
+        internal static void DisconnectClient(Client client)
         {
             try
             {

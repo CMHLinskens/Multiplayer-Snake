@@ -49,6 +49,7 @@ namespace Server
                 if (player.Name == playerName)
                 {
                     Players.Remove(player);
+                    Console.WriteLine(this);
                     return true;
                 }
             return false;
