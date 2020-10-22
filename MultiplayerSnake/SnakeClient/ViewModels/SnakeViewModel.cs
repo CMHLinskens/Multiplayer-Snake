@@ -35,16 +35,7 @@ namespace SnakeClient.ViewModels
             KeyDownCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.down; });
             KeyLeftCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.left; });
             KeyRightCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.right; });
-            // Bind the key events
-            KeyUpCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.up; });
-            KeyDownCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.down; });
-            KeyLeftCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.left; });
-            KeyRightCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.right; });
-            // Bind the key events
-            KeyUpCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.up; });
-            KeyDownCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.down; });
-            KeyLeftCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.left; });
-            KeyRightCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.right; });
+
             this.drawingContext = new DrawingVisual().RenderOpen();
             Rectangles = new ObservableCollection<CustomRectangle>();
 
