@@ -5,14 +5,45 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SnakeClient.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Background="AliceBlue">
-    <InkCanvas Strokes="{Binding StrokeCollection}">
+             d:DesignHeight="{Binding Height}" d:DesignWidth="{Binding Width}" Background="AliceBlue">
+    
+    <!--d:DesignHeight="{Binding Height}" d:DesignWidth="{Binding Width}" Background="AliceBlue">-->
+    <!--<InkCanvas Strokes="{Binding StrokeCollection}" >
         <InkCanvas.InputBindings>
             <KeyBinding Key="Down" Command="{Binding KeyDownCommand}"/>
             <KeyBinding Key="Left" Command="{Binding KeyLeftCommand}"/>
             <KeyBinding Key="Up" Command="{Binding KeyUpCommand}"/>
             <KeyBinding Key="Right" Command="{Binding KeyRightCommand}"/>
-        </InkCanvas.InputBindings>
-        
-    </InkCanvas>
+        </InkCanvas.InputBindings>        
+    </InkCanvas>-->
+    <!--<Canvas  >
+        <Canvas.InputBindings>
+            <KeyBinding Key="Down" Command="{Binding KeyDownCommand}"/>
+            <KeyBinding Key="Left" Command="{Binding KeyLeftCommand}"/>
+            <KeyBinding Key="Up" Command="{Binding KeyUpCommand}"/>
+            <KeyBinding Key="Right" Command="{Binding KeyRightCommand}"/>
+        </Canvas.InputBindings>
+        <ItemsControl >
+            <Rectangle />
+
+        </ItemsControl>
+    </Canvas>-->
+    <ItemsControl ItemsSource="{Binding Rectangles}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <Canvas Background="Black" Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Rectangle Fill="{Binding Color}" Width="{Binding Width}" Height="{Binding Height}" Stroke="Black" StrokeThickness="2"/>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+        <ItemsControl.ItemContainerStyle>
+            <Style>
+                <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                <Setter Property="Canvas.Left" Value="{Binding X}"/>
+            </Style>
+        </ItemsControl.ItemContainerStyle>
+    </ItemsControl>
 </UserControl>
