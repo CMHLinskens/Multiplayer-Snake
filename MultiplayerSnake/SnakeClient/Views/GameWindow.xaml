@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SnakeClient.Views"
         mc:Ignorable="d"
-        Title="GameWindow" Height="1080" Width="1920" FontSize="30">
+        Title="GameWindow" Height="1080" Width="1920" FontSize="30" WindowState="Maximized">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
@@ -32,14 +32,18 @@
         
         <!--Row 1-->
         <Border Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="4" Grid.RowSpan="8" BorderThickness="1" BorderBrush="Black">
-            <Canvas >            
-            </Canvas>
+            <UserControl Content="{Binding SnakeViewModel}"/>
         </Border>
-        <ListView Grid.Column="6" Grid.Row="1" Grid.RowSpan="3">            
+        <ListView Grid.Column="6" Grid.Row="1" Grid.RowSpan="2" ItemsSource="{Binding Players}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
         </ListView>
         
-        <!--Row 5-->
-        <Border Grid.Column="6" Grid.Row="5" Grid.RowSpan="2" BorderThickness="1" BorderBrush="Black">
+        <!--Row 4-->
+        <Border Grid.Column="6" Grid.Row="4" Grid.RowSpan="3" BorderThickness="1" BorderBrush="Black">
         <ItemsControl/>
         </Border>
         
@@ -49,7 +53,7 @@
         <!--Row 8-->
         <DockPanel Grid.Column="6" Grid.Row="8" VerticalAlignment="Bottom">
             <Button DockPanel.Dock="Left" Width="150" Height="50" Content="START!" Command="{Binding StartCommand}"/>
-            <Button DockPanel.Dock="Right" Width="150" Height="50" Margin="100 0 0 0" Content="{Binding QuitCommand}"/>
+            <Button DockPanel.Dock="Right" Width="150" Height="50" Margin="100 0 0 0" Content="QUIT" Command="{Binding QuitCommand}"/>
         </DockPanel>
     </Grid>
 </Window>

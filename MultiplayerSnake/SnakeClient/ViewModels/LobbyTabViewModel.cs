@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using SnakeClient.Models;
 using SnakeClient.Utils;
+using SnakeClient.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -39,7 +40,7 @@ namespace SnakeClient.ViewModels
         public LobbyTabViewModel(ShellViewModel shellViewModel)
         {
             selectedLobbyName = "";
-            Lobbies = new ObservableCollection<LobbyViewModel> { new LobbyViewModel(new Lobby("TestLobby", "Test", 2, MapSize.size16x16), shellViewModel)};
+            Lobbies = new ObservableCollection<LobbyViewModel> { new LobbyViewModel(new Lobby("TestLobby", "Test", 2, MapSize.size16x16), shellViewModel, this)};
             this.shellViewModel = shellViewModel;
             Task.Factory.StartNew(RefreshLoopAsync);
             CreateLobbyCommand = new RelayCommand(CreateLobby);
@@ -68,7 +69,7 @@ namespace SnakeClient.ViewModels
             await Task.Run(() => shellViewModel.Program.RefreshLobbyList());
             foreach (Lobby lobby in shellViewModel.Program.sc.Lobbies)
             {
-                lobbyViewModels.Add(new LobbyViewModel(lobby, shellViewModel));
+                lobbyViewModels.Add(new LobbyViewModel(lobby, shellViewModel, this));
                 if (lobby.Name == selectedLobbyName)
                     SelectedLobbyViewModel = lobbyViewModels[lobbyViewModels.Count - 1];
             }
@@ -79,8 +80,15 @@ namespace SnakeClient.ViewModels
         {
             SelectedLobbyViewModel = null;
             selectedLobbyName = "";
-            SelectedViewModel = new CreateLobbyViewModel(shellViewModel);
+            SelectedViewModel = new CreateLobbyViewModel(shellViewModel, this);
             CreateButtonVisibility = Visibility.Hidden;
+        }
+
+        public void OpenGameWindow(Lobby lobby)
+        {
+            GameWindow gameWindow = new GameWindow();
+            gameWindow.DataContext = new GameWindowViewModel(lobby, this.shellViewModel);
+            gameWindow.Show();
         }
     }
 }

@@ -8,10 +8,12 @@ using Utils;
 
 namespace SnakeClient.ViewModels
 {
-     class LobbyViewModel : CustomObservableObject
+    class LobbyViewModel : CustomObservableObject, ILobbyViewModel
     {
         private ShellViewModel shellViewModel;
-        private Lobby lobby;
+        private LobbyTabViewModel lobbyTabViewModel;
+
+        public Lobby Lobby { get; set; }
         public string Name { get; set; }
         public ObservableCollection<Player> Players { get; set; }
         public bool IsInGame { get; set; }
@@ -27,16 +29,17 @@ namespace SnakeClient.ViewModels
             MapSize = mapSize;
         }
 
-        public LobbyViewModel(Lobby lobby, ShellViewModel shellViewModel)
+        public LobbyViewModel(Lobby lobby, ShellViewModel shellViewModel, LobbyTabViewModel lobbyTabViewModel)
         {
             this.shellViewModel = shellViewModel;
-            this.lobby = lobby;
-            Name = this.lobby.Name;
-            Players = lobby.Players;
+            this.lobbyTabViewModel = lobbyTabViewModel;
+            Lobby = lobby;
+            Name = Lobby.Name;
+            Players = Lobby.Players;
             IsInGame = false;
-            MaxPlayers = this.lobby.MaxPlayers;
-            Owner = this.lobby.GameOwner;
-            MapSize = (MapSize)this.lobby.MapSize;
+            MaxPlayers = Lobby.MaxPlayers;
+            Owner = Lobby.GameOwner;
+            MapSize = (MapSize)Lobby.MapSize;
             JoinCommand = new RelayCommand(async () => await JoinLobbyAsync());
         }
 
@@ -55,6 +58,7 @@ namespace SnakeClient.ViewModels
         private void LobbyJoined()
         {
             // Join lobby on client
+            lobbyTabViewModel.OpenGameWindow(Lobby);
         }
 
         private void RequestStartGame()

@@ -25,5 +25,8 @@
         <DataTemplate DataType="{x:Type viewModels:LobbyViewModel}">
             <views:LobbyView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SnakeViewModel}">
+            <views:SnakeView/>
+        </DataTemplate>
     </Application.Resources>
 </Application>
