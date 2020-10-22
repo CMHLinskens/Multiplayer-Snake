@@ -62,7 +62,7 @@ namespace Server
          */
         private void HandleData(dynamic data)
         {
-            Console.WriteLine(data);
+            //Console.WriteLine(data);
             string tag = data.tag;
             byte[] bytes;
             switch (tag)
