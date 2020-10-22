@@ -45,5 +45,11 @@
                 <Setter Property="Canvas.Left" Value="{Binding X}"/>
             </Style>
         </ItemsControl.ItemContainerStyle>
+        <ItemsControl.InputBindings>
+            <KeyBinding Key="Down" Command="{Binding KeyDownCommand}"/>
+            <KeyBinding Key="Left" Command="{Binding KeyLeftCommand}"/>
+            <KeyBinding Key="Up" Command="{Binding KeyUpCommand}"/>
+            <KeyBinding Key="Right" Command="{Binding KeyRightCommand}"/>
+        </ItemsControl.InputBindings>
     </ItemsControl>
 </UserControl>

@@ -27,6 +27,7 @@ namespace SnakeClient.ViewModels
         {
             StartCommand = new RelayCommand(Start);
             QuitCommand = new RelayCommand(async () => await Quit());
+            shellViewModel.Program.sc.GameField = new int[16, 16];
             this.shellViewModel = shellViewModel;
             this.lobby = lobby;
             Players = lobby.Players;
@@ -62,6 +63,7 @@ namespace SnakeClient.ViewModels
         private void Start()
         {
             SnakeViewModel = new SnakeViewModel(this.shellViewModel);
+            Task.Factory.StartNew(DrawLoopAsync);
         }
 
         private async Task Quit()
@@ -79,5 +81,20 @@ namespace SnakeClient.ViewModels
             
         }
         private void FailedToLeftLobby() { }
+
+        private async Task DrawLoopAsync()
+        {
+            while (!shellViewModel.Program.sc.ReceivedGameStartMessage) Thread.Sleep(10);
+            shellViewModel.Program.sc.ReceivedGameStartMessage = false;
+            while (lobby.IsInGame)
+            {
+                if (shellViewModel.Program.sc.ReceivedNewUpdate)
+                {
+                    await Task.Run(() => SnakeViewModel.Draw());
+                    shellViewModel.Program.sc.ReceivedNewUpdate = false;
+                }
+                Thread.Sleep(10);
+            }
+        }
     }
 }

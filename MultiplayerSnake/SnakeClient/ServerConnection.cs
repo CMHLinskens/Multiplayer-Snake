@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using Utils;
@@ -28,7 +29,7 @@ namespace SnakeClient
         public ObservableCollection<Lobby> Lobbies { get { return lobbyListBuilder; } }
         public Lobby joinedLobby { get; private set; }
         public Direction MoveDirection { get; set; }
-        public int[,] GameField { get; private set; }
+        public int[,] GameField { get; set; }
 
         #region // Reply booleans
         public bool ReceivedLoginMessage { get; private set; }
@@ -38,6 +39,8 @@ namespace SnakeClient
         public bool ReceivedLobbyLeaveMessage { get; private set; }
         public bool ReceivedLobbyRefresh { get; private set; }
         public bool ReceivedStartGame { get; set; }
+        public bool ReceivedNewUpdate { get; set; }
+        public bool ReceivedGameStartMessage { get; set; }
         #endregion
 
         public ServerConnection()
@@ -90,9 +93,8 @@ namespace SnakeClient
                 tcpClient.GetStream().Dispose();
                 tcpClient.Close();
             }
-            catch (ObjectDisposedException)
-            {
-            }
+            catch (ObjectDisposedException) {}
+            catch (InvalidOperationException) {}
         }
 
         /*
@@ -183,7 +185,7 @@ namespace SnakeClient
                     break;
                 case "game/start/success":
                     // Game has started.
-
+                    ReceivedGameStartMessage = true;
                     break;
                 case "game/move/request":
                     // Send the next desired move to the server.
@@ -193,7 +195,8 @@ namespace SnakeClient
                     break;
                 case "game/update":
                     // Recieved new update of the active game.
-                    //UpdateGameField(data.data.gameField);
+                    ReceivedNewUpdate = true;
+                    UpdateGameField(data.data.gameField);
                     break;
                 case "game/end":
                     // The game has been won by someone
@@ -209,7 +212,14 @@ namespace SnakeClient
          */
         private void UpdateGameField(dynamic gameField)
         {
-            GameField = gameField as int[,];
+            JArray gameFieldRows = gameField as JArray;
+            for (int row = 0; row < gameField.Count; row++)
+            {
+                for (int column = 0; column < gameField.Count; column++)
+                {
+                    GameField[row, column] = gameFieldRows[row][column].ToObject<int>();
+                }
+            }
         }
 
         /*

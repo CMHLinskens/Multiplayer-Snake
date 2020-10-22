@@ -216,8 +216,9 @@ namespace Server
         {
             StopGame();
 
-            foreach (var p in Lobby.Players)
-                Server.GetClientWithUserName(p.Name).SendPacket(PackageWrapper.SerializeData("game/end", new { playerName = player.Name }));
+            // TODO FIX
+            //foreach (var p in Lobby.Players)
+            //    Server.GetClientWithUserName(p.Name).SendPacket(PackageWrapper.SerializeData("game/end", new { playerName = player.Name }));
         }
 
         /*

@@ -46,7 +46,7 @@ namespace Server
 
                 Players.Add(new Player(playerName));
                 Console.WriteLine(this);
-                Game.StartGame();
+                StartGame();
                 return true;
             }
             return false;
