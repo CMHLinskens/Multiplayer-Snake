@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Utils;
 
 namespace SnakeClient.ViewModels
 {
@@ -23,6 +24,10 @@ namespace SnakeClient.ViewModels
         public SnakeViewModel SnakeViewModel { get; set; }
         public ICommand StartCommand { get; set; }
         public ICommand QuitCommand { get; set; }
+        public ICommand KeyDownCommand { get; set; }
+        public ICommand KeyLeftCommand { get; set; }
+        public ICommand KeyUpCommand { get; set; }
+        public ICommand KeyRightCommand { get; set; }
         public GameWindowViewModel(Lobby lobby, ShellViewModel shellViewModel)
         {
             StartCommand = new RelayCommand(Start);
@@ -32,6 +37,8 @@ namespace SnakeClient.ViewModels
             this.lobby = lobby;
             Players = lobby.Players;
             Task.Factory.StartNew(RefreshLoopAsync);
+
+            BindKeys();
         }
 
         /*
@@ -60,6 +67,13 @@ namespace SnakeClient.ViewModels
             return shellViewModel.Program.sc.joinedLobby;
         }
 
+        private void BindKeys()
+        {
+            KeyUpCommand = new RelayCommand(() => SetMoveDirection(Direction.up));
+            KeyDownCommand = new RelayCommand(() => SetMoveDirection(Direction.down));
+            KeyLeftCommand = new RelayCommand(() => SetMoveDirection(Direction.left));
+            KeyRightCommand = new RelayCommand(() => SetMoveDirection(Direction.right));
+        }
         private void Start()
         {
             SnakeViewModel = new SnakeViewModel(this.shellViewModel);
@@ -81,6 +95,11 @@ namespace SnakeClient.ViewModels
             
         }
         private void FailedToLeftLobby() { }
+
+        private void SetMoveDirection(Direction newDirection)
+        {
+            shellViewModel.Program.sc.MoveDirection = newDirection;
+        }
 
         private async Task DrawLoopAsync()
         {

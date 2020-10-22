@@ -22,11 +22,6 @@ namespace SnakeClient.ViewModels
         public double Height { get; set; } = 920;
         private DrawingContext drawingContext;
         private ShellViewModel shellViewModel;
-
-        public ICommand KeyDownCommand{ get; set; }
-        public ICommand KeyLeftCommand { get; set; }
-        public ICommand KeyUpCommand { get; set; }
-        public ICommand KeyRightCommand { get; set; }
         public StrokeCollection StrokeCollection { get; set; }
         public ObservableCollection<CustomRectangle> Rectangles{ get; set; }
 
@@ -35,10 +30,7 @@ namespace SnakeClient.ViewModels
             StrokeCollection = new StrokeCollection();
             this.shellViewModel = shellViewModel;
             // Bind the key events
-            KeyUpCommand = new RelayCommand(() => SetMoveDirection(Direction.up));
-            KeyDownCommand = new RelayCommand(() => SetMoveDirection(Direction.down));
-            KeyLeftCommand = new RelayCommand(() => SetMoveDirection(Direction.left));
-            KeyRightCommand = new RelayCommand(() => SetMoveDirection(Direction.right));
+
 
             this.drawingContext = new DrawingVisual().RenderOpen();
             Rectangles = new ObservableCollection<CustomRectangle>();
@@ -64,10 +56,7 @@ namespace SnakeClient.ViewModels
         /*
          * Sets new move direction.
          */
-        private void SetMoveDirection(Direction newDirection)
-        {
-            shellViewModel.Program.sc.MoveDirection = newDirection;
-        }
+
 
         /*
          * Creates the rectangles and adds them to the Rectangles collection. "Draws" the 2d array.

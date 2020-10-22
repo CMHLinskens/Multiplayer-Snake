@@ -55,5 +55,18 @@
             <Button DockPanel.Dock="Left" Width="150" Height="50" Content="START!" Command="{Binding StartCommand}"/>
             <Button DockPanel.Dock="Right" Width="150" Height="50" Margin="100 0 0 0" Content="QUIT" Command="{Binding QuitCommand}"/>
         </DockPanel>
+        <!--Makes chat a bit harder-->
+        <!--<Grid.InputBindings>
+            <KeyBinding Key="Down" Command="{Binding KeyDownCommand}"/>
+            <KeyBinding Key="Left" Command="{Binding KeyLeftCommand}"/>
+            <KeyBinding Key="Up" Command="{Binding KeyUpCommand}"/>
+            <KeyBinding Key="Right" Command="{Binding KeyRightCommand}"/>
+        </Grid.InputBindings>-->
     </Grid>
+    <Window.InputBindings>
+        <KeyBinding Key="Down" Command="{Binding KeyDownCommand}"/>
+        <KeyBinding Key="Left" Command="{Binding KeyLeftCommand}"/>
+        <KeyBinding Key="Up" Command="{Binding KeyUpCommand}"/>
+        <KeyBinding Key="Right" Command="{Binding KeyRightCommand}"/>
+    </Window.InputBindings>
 </Window>
