@@ -33,7 +33,7 @@ namespace SnakeClient.ViewModels
 
         private void Start()
         {
-            SnakeViewModel = new SnakeViewModel();
+            SnakeViewModel = new SnakeViewModel(this.shellViewModel);
         }
 
         private void Quit()

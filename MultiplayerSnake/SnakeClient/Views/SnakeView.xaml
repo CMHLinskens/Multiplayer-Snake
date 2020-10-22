@@ -6,7 +6,13 @@
              xmlns:local="clr-namespace:SnakeClient.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" Background="AliceBlue">
-    <Grid>
-            
-    </Grid>
+    <InkCanvas Strokes="{Binding StrokeCollection}">
+        <InkCanvas.InputBindings>
+            <KeyBinding Key="Down" Command="{Binding KeyDownCommand}"/>
+            <KeyBinding Key="Left" Command="{Binding KeyLeftCommand}"/>
+            <KeyBinding Key="Up" Command="{Binding KeyUpCommand}"/>
+            <KeyBinding Key="Right" Command="{Binding KeyRightCommand}"/>
+        </InkCanvas.InputBindings>
+        
+    </InkCanvas>
 </UserControl>
