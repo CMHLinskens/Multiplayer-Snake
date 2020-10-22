@@ -30,7 +30,7 @@ namespace SnakeClient.ViewModels
         public ICommand KeyRightCommand { get; set; }
         public GameWindowViewModel(Lobby lobby, ShellViewModel shellViewModel)
         {
-            StartCommand = new RelayCommand(Start);
+            StartCommand = new RelayCommand(RequestStartGame);
             QuitCommand = new RelayCommand(async () => await Quit());
             shellViewModel.Program.sc.GameField = new int[16, 16];
             this.shellViewModel = shellViewModel;
@@ -39,7 +39,7 @@ namespace SnakeClient.ViewModels
             Task.Factory.StartNew(RefreshLoopAsync);
 
             BindKeys();
-            //Task.Factory.StartNew(WaitForGameStart);
+            Task.Factory.StartNew(WaitForGameStart);
         }
 
         private void WaitForGameStart()
@@ -80,14 +80,21 @@ namespace SnakeClient.ViewModels
 
         private void BindKeys()
         {
-            KeyUpCommand = new RelayCommand(() => SetMoveDirection(Direction.up));
-            KeyDownCommand = new RelayCommand(() => SetMoveDirection(Direction.down));
-            KeyLeftCommand = new RelayCommand(() => SetMoveDirection(Direction.left));
-            KeyRightCommand = new RelayCommand(() => SetMoveDirection(Direction.right));
+            KeyUpCommand = new RelayCommand(() => { if(shellViewModel.Program.sc.MoveDirection != Direction.down) SetMoveDirection(Direction.up); });
+            KeyDownCommand = new RelayCommand(() => { if (shellViewModel.Program.sc.MoveDirection != Direction.up) SetMoveDirection(Direction.down); });
+            KeyLeftCommand = new RelayCommand(() => { if (shellViewModel.Program.sc.MoveDirection != Direction.right) SetMoveDirection(Direction.left); });
+            KeyRightCommand = new RelayCommand(() => { if (shellViewModel.Program.sc.MoveDirection != Direction.left) SetMoveDirection(Direction.right); });
         }
+
+        private void RequestStartGame()
+        {
+            shellViewModel.Program.StartGame();
+        }
+
         private void Start()
         {
             SnakeViewModel = new SnakeViewModel(this.shellViewModel);
+            lobby.IsInGame = true;
             Task.Factory.StartNew(DrawLoopAsync);
         }
 
@@ -114,11 +121,6 @@ namespace SnakeClient.ViewModels
 
         private async Task DrawLoopAsync()
         {
-            while (!shellViewModel.Program.sc.ReceivedGameStartMessage)
-            {
-                Thread.Sleep(10);
-            }
-            shellViewModel.Program.sc.ReceivedGameStartMessage = false;
             while (lobby.IsInGame)
             {
                 if (shellViewModel.Program.sc.ReceivedNewUpdate)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using Utils;
 
 namespace Server
@@ -202,7 +203,7 @@ namespace Server
         {
             if (client.Lobby != null)
                 if (client.Lobby.GameOwner == client.Account.Username)
-                    client.Lobby.StartGame();
+                    Task.Run(() => client.Lobby.StartGame());
         }
 
         /*

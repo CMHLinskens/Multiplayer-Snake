@@ -46,7 +46,7 @@ namespace Server
 
                 Players.Add(new Player(playerName));
                 Console.WriteLine(this);
-                StartGame();
+                //StartGame();
                 return true;
             }
             return false;
@@ -100,10 +100,10 @@ namespace Server
         /*
          * Start the game and notify all players in lobby.
          */
-        public void StartGame()
+        public async Task StartGame()
         {
             IsInGame = true;
-            Game.StartGame();
+            await Task.Run(() => Game.StartGame());
             foreach (var player in Players)
                 Server.GetClientWithUserName(player.Name).SendPacket(PackageWrapper.SerializeData("game/start/success", new { }));
         }
