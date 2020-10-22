@@ -43,6 +43,16 @@ namespace SnakeClient
             return sc.ReceivedLobbyJoinMessage;
         }
 
+        internal bool LeaveLobby(string lobbyName, string playerName)
+        {
+            sc.LeaveLobby(lobbyName, playerName);
+
+            while (!sc.ReceivedLobbyLeaveMessage)
+                Thread.Sleep(10);
+
+            return sc.ReceivedLobbyLeaveMessage;
+        }
+
         internal void RefreshLobbyList()
         {
             sc.RefreshLobbyList();
@@ -51,6 +61,26 @@ namespace SnakeClient
                 Thread.Sleep(10);
 
             return;
+        }
+
+        internal void RefreshSpecificLobby()
+        {
+            sc.RefreshSpecificLobby();
+
+            while (!sc.ReceivedLobbyRefresh)
+                Thread.Sleep(10);
+
+            return;
+        }
+
+        internal void StartGame()
+        {
+            sc.StartGame();
+        }
+
+        internal void StopGame()
+        {
+            sc.StopGame();
         }
     }
 }

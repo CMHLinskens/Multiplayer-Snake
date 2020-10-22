@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ namespace Server
         private int gameUpdateSpeed = 500; // time in ms.
         private int mapSize;
         private (int y, int x) food;
+        private int foodWinCondition = 20;
         private Random random;
         private Stopwatch watch; // Use this to keep track of execution time of the update method.
         private Timer GameLoop { get; set; }
@@ -37,25 +39,27 @@ namespace Server
         private async void UpdateGameAsync(object sender, ElapsedEventArgs e)
         {
             watch.Restart();
+            // Get next moves from the clients.
             List<Direction> nextMoves = await Task.Run(() => Lobby.RequestPlayerData());
             
+            // Process all moves and update the game.
             foreach(var player in Lobby.Players)
                 if(player.Alive)
                     MovePlayer(player, nextMoves[Lobby.Players.IndexOf(player)]);
 
             Console.WriteLine(this);
 
-            // TODO
-            // Send ouput to all clients
+            // Send new update to all clients in this lobby.
+            foreach (var player in Lobby.Players)
+                Server.GetClientWithUserName(player.Name).SendPacket(PackageWrapper.SerializeData("game/update", new { gameField = GameField }));
 
             watch.Stop();
             GameLoop.Interval = (gameUpdateSpeed - watch.ElapsedMilliseconds);
-            //Console.WriteLine($"Elapsed time {watch.ElapsedMilliseconds}");
         }
 
         public void StartGame()
         {
-            Task.Run(() => StartGameAsync()); //  No need to await this task
+            Task.Run(() => StartGameAsync());
         }
 
         /*
@@ -63,10 +67,12 @@ namespace Server
          */
         private async Task StartGameAsync()
         {
+            if(IsRunning) { return; }
+            Lobby.IsInGame = true;
+            IsRunning = true;
             await Task.Run(() => InitializeGameField());
             Console.WriteLine(this);
             GameLoop.Start();
-            IsRunning = true;
         }
 
         /*
@@ -105,6 +111,7 @@ namespace Server
             foreach (var player in Lobby.Players)
             {
                 player.Alive = true;
+                player.Length = 3;
                 switch (Lobby.Players.IndexOf(player))
                 {
                     case 0:
@@ -159,12 +166,11 @@ namespace Server
                 {
                     player.Length++;
                     CreateNewFood();
+                    CheckForWinByFood(player);
                 }
                 else if (collisionType == CollisionType.Player)
                 {
-                    // Kill Player
-                    player.Position.Clear();
-                    player.Alive = false;
+                    KillPlayer(player);
                 }
             }
             else
@@ -174,6 +180,44 @@ namespace Server
                 // Remove the last position in the player position list.
                 player.Position.RemoveAt(player.Position.Count - 1);
             }
+        }
+
+        /*
+         * Check if the game has been won by food consumption.
+         */
+        private void CheckForWinByFood(Player player)
+        {
+            if (player.Length >= foodWinCondition)
+            {
+                EndGame(player);
+            }
+        }
+        
+        /*
+         * Check if the game has been won by elimination.
+         */
+        private void CheckForWinByElimination()
+        {
+            Player lastPlayer = null;
+            foreach (var player in Lobby.Players)
+            {
+                if (player.Alive)
+                {
+                    if (lastPlayer == null)
+                        lastPlayer = player;
+                    else
+                        return;
+                }
+            }
+            EndGame(lastPlayer);
+        }
+
+        private void EndGame(Player player)
+        {
+            StopGame();
+
+            foreach (var p in Lobby.Players)
+                Server.GetClientWithUserName(p.Name).SendPacket(PackageWrapper.SerializeData("game/end", new { playerName = player.Name }));
         }
 
         /*
@@ -223,8 +267,11 @@ namespace Server
                 {
                     if(pos == newPosition)
                     {
-                        collisionType = CollisionType.Player;
-                        return true;
+                        if (pos != player.Position[0])
+                        {
+                            collisionType = CollisionType.Player;
+                            return true;
+                        }
                     }
                 }
             }
@@ -233,11 +280,27 @@ namespace Server
         }
 
         /*
+         * Disables the player and removes all positions in the GameField
+         */
+        public void KillPlayer(Player player)
+        {
+            player.Alive = false;
+            // Remove all positions in the GameField
+            foreach (var pos in player.Position)
+                GameField[pos.y, pos.x] = 0;
+            
+            player.Position.Clear();
+
+            CheckForWinByElimination();
+        }
+
+        /*
          * Stops the game.
          */
         public void StopGame()
         {
             GameLoop.Stop();
+            Lobby.IsInGame = false;
             IsRunning = false;
         }
 

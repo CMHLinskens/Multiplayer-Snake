@@ -60,6 +60,8 @@ namespace Server
             foreach (var player in Players)
                 if (player.Name == playerName)
                 {
+                    if (IsInGame)
+                        Game.KillPlayer(player);
                     Players.Remove(player);
                     Console.WriteLine(this);
                     return true;
@@ -96,6 +98,17 @@ namespace Server
         }
 
         /*
+         * Start the game and notify all players in lobby.
+         */
+        public void StartGame()
+        {
+            IsInGame = true;
+            Game.StartGame();
+            foreach (var player in Players)
+                Server.GetClientWithUserName(player.Name).SendPacket(PackageWrapper.SerializeData("game/start/success", new { }));
+        }
+
+        /*
          * Method used for testing output.
          */
         public override string ToString()
@@ -106,6 +119,15 @@ namespace Server
                 playersString += player.Name;
             }
             return $"Lobby name: {Name} Players: {playersString} GameOwner: {GameOwner}";
+        }
+
+        /*
+         * Stop the game and delete it.
+         */
+        internal void DeleteGame()
+        {
+            Game.StopGame();
+            Game = null;
         }
     }
 }

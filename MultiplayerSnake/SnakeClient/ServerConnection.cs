@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
+﻿using Microsoft.CSharp.RuntimeBinder;
+using Microsoft.VisualBasic.CompilerServices;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SnakeClient.Models;
@@ -25,12 +26,18 @@ namespace SnakeClient
         private ObservableCollection<Lobby> lobbyListBuilder;
         public bool LoggedIn { get; private set; }
         public ObservableCollection<Lobby> Lobbies { get { return lobbyListBuilder; } }
+        public Lobby joinedLobby { get; private set; }
+        public Direction MoveDirection { get; set; }
+        public int[,] GameField { get; private set; }
 
         #region // Reply booleans
         public bool ReceivedLoginMessage { get; private set; }
         public bool ReceivedLobbyCreateMessage { get; private set; }
         public bool ReceivedLobbyJoinMessage { get; private set; }
         public bool ReceivedAllLobbies { get; private set; }
+        public bool ReceivedLobbyLeaveMessage { get; private set; }
+        public bool ReceivedLobbyRefresh { get; private set; }
+        public bool ReceivedStartGame { get; set; }
         #endregion
 
         public ServerConnection()
@@ -150,9 +157,11 @@ namespace SnakeClient
                     break;
                 case "leave/success":
                     // Left the lobby on server.
+                    ReceivedLobbyLeaveMessage = true;
                     break;
                 case "leave/error":
                     // Unable to leave the lobby.
+                    ReceivedLobbyLeaveMessage = true;
                     break;
                 case "refresh/fragment":
                     // Received a fragment with 2 lobbies inside.
@@ -164,19 +173,58 @@ namespace SnakeClient
                     AddLobbies(data.data.lobbies);
                     ReceivedAllLobbies = true;
                     break;
+                case "refresh/lobby/success":
+                    // Received requested lobby.
+                    RefreshJoinedLobby(data.data.lobby);
+                    ReceivedLobbyRefresh = true;
+                    break;
                 case "newOwner":
                     // This client is the new owner of the lobby.
+                    break;
+                case "game/start/success":
+                    // Game has started.
+
                     break;
                 case "game/move/request":
                     // Send the next desired move to the server.
                     // TODO
                     // retrieve the desired move direction.
-                    SendNextMove(Direction.down);
+                    SendNextMove(MoveDirection);
                     break;
+                case "game/update":
+                    // Recieved new update of the active game.
+                    //UpdateGameField(data.data.gameField);
+                    break;
+                case "game/end":
+                    // The game has been won by someone
+
                 default:
                     Console.WriteLine($"No handling found for tag: {tag}");
                     break;
             }
+        }
+
+        /*
+         * Helper function to build up the new GameField
+         */
+        private void UpdateGameField(dynamic gameField)
+        {
+            GameField = gameField as int[,];
+        }
+
+        /*
+         * Helper function to refresh joined lobby.
+         */
+        private void RefreshJoinedLobby(dynamic lobby)
+        {
+            try // only epics use try catch
+            {
+                ObservableCollection<Player> players = new ObservableCollection<Player>();
+                foreach (dynamic player in ((JArray)lobby.Players).Children())
+                    players.Add(new Player((string)player.Name));
+                joinedLobby = new Lobby((string)lobby.Name, players, (bool)lobby.IsInGame, (int)lobby.MaxPlayers, (string)lobby.GameOwner, (MapSize)lobby.MapSize);
+            }
+            catch(RuntimeBinderException) { }
         }
 
         /*
@@ -246,6 +294,7 @@ namespace SnakeClient
          */
         public void LeaveLobby(string lobbyName, string playerName)
         {
+            ReceivedLobbyLeaveMessage = false;
             SendPacket(PackageWrapper.SerializeData("leave", new { lobbyName = lobbyName, playerName = playerName }));
         }
         /*
@@ -256,6 +305,14 @@ namespace SnakeClient
             ReceivedAllLobbies = false;
             lobbyListBuilder = new ObservableCollection<Lobby>();
             SendPacket(PackageWrapper.SerializeData("refresh", new { }));
+        }
+        /*
+         * Asks the server to send the updated lobby to this client.
+         */
+        public void RefreshSpecificLobby()
+        {
+            ReceivedLobbyRefresh = false;
+            SendPacket(PackageWrapper.SerializeData("refresh/lobby", new { }));
         }
         /*
          * Asks the server the send the next fragment of the list.

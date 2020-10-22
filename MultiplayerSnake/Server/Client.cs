@@ -47,12 +47,12 @@ namespace Server
                 Server.DisconnectClient(this);
                 return;
             }
-            catch (RuntimeBinderException e)
+            catch (RuntimeBinderException)
             {
-                Console.WriteLine(e.StackTrace);
                 Server.DisconnectClient(this);
                 return;
             }
+            catch(JsonReaderException) { }
 
             stream.BeginRead(buffer, 0, buffer.Length, new AsyncCallback(OnRead), null);
         }
@@ -108,6 +108,10 @@ namespace Server
                     else
                         // Failed to leave lobby.
                         SendPacket(PackageWrapper.SerializeData("leave/error", new { message = "Unable to leave the lobby." }));
+                    break;
+                case "refresh/lobby":
+                    // Send the current joined lobby to the client
+                    SendPacket(PackageWrapper.SerializeData("refresh/lobby/success", new { lobby = Lobby }));
                     break;
                 case "refresh":
                     // Start sending the lobby list to the client.

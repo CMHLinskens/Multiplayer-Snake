@@ -43,7 +43,6 @@ namespace SnakeClient.ViewModels
 
         private async Task CreateGameRequestAsync()
         {
-
             Lobby = new Lobby(Name, shellViewModel.Name, SelectedMaxPlayers, SelectedMapSize);
             if (await Task.Run(() => shellViewModel.Program.CreateLobby(Name, shellViewModel.Name, SelectedMaxPlayers, SelectedMapSize)))
                 LobbyCreated();

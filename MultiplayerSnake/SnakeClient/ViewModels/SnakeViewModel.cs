@@ -1,4 +1,5 @@
-﻿using SnakeClient.Utils;
+﻿using GalaSoft.MvvmLight.Command;
+using SnakeClient.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,10 +17,9 @@ namespace SnakeClient.ViewModels
     class SnakeViewModel : CustomObservableObject
     {
         private int[,] gameField;
-        private Direction currentDirection;
-        private DrawingContext drawingContext;
-        public double Height { get; set; } = 920;
         public double Width { get; set; } = 1140;
+        public double Height { get; set; } = 920;
+        private DrawingContext drawingContext;
         public ICommand KeyDownCommand{ get; set; }
         public ICommand KeyLeftCommand { get; set; }
         public ICommand KeyUpCommand { get; set; }
@@ -30,6 +30,21 @@ namespace SnakeClient.ViewModels
         public SnakeViewModel(ShellViewModel shellViewModel)
         {
             StrokeCollection = new StrokeCollection();
+            // Bind the key events
+            KeyUpCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.up; });
+            KeyDownCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.down; });
+            KeyLeftCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.left; });
+            KeyRightCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.right; });
+            // Bind the key events
+            KeyUpCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.up; });
+            KeyDownCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.down; });
+            KeyLeftCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.left; });
+            KeyRightCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.right; });
+            // Bind the key events
+            KeyUpCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.up; });
+            KeyDownCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.down; });
+            KeyLeftCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.left; });
+            KeyRightCommand = new RelayCommand(() => { shellViewModel.Program.sc.MoveDirection = Direction.right; });
             this.drawingContext = new DrawingVisual().RenderOpen();
             Rectangles = new ObservableCollection<CustomRectangle>();
 

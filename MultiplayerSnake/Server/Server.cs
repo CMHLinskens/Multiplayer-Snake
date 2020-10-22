@@ -183,7 +183,10 @@ namespace Server
                                 lobby.GameOwner = newGameOwner;
                             }
                             else // If there is no-one left in the lobby, delete it.
+                            {
+                                lobby.DeleteGame();
                                 lobbies.Remove(lobby);
+                            }
                         }
                     }
                     return leaveResult;
@@ -199,7 +202,7 @@ namespace Server
         {
             if (client.Lobby != null)
                 if (client.Lobby.GameOwner == client.Account.Username)
-                    client.Lobby.Game.StartGame();
+                    client.Lobby.StartGame();
         }
 
         /*
@@ -207,9 +210,11 @@ namespace Server
          */
         internal static void StopGame(Client client)
         {
-            if(client.Lobby != null)
+            if (client.Lobby != null)
                 if (client.Lobby.GameOwner == client.Account.Username)
+                {
                     client.Lobby.Game.StopGame();
+                }
         }
 
         /*

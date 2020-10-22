@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -24,11 +26,37 @@ namespace SnakeClient.ViewModels
         public GameWindowViewModel(Lobby lobby, ShellViewModel shellViewModel)
         {
             StartCommand = new RelayCommand(Start);
-            QuitCommand = new RelayCommand(Quit);
+            QuitCommand = new RelayCommand(async () => await Quit());
             this.shellViewModel = shellViewModel;
             this.lobby = lobby;
             Players = lobby.Players;
+            Task.Factory.StartNew(RefreshLoopAsync);
+        }
 
+        /*
+         * Refreshes this lobby every 1000 ms.
+         */
+        private async Task RefreshLoopAsync()
+        {
+            while (shellViewModel.Program.sc.LoggedIn)
+            {
+                // Refresh list
+                lobby = await Task.Run(() => Refresh());
+                Players = lobby.Players;
+                if(lobby.IsInGame)
+                    if(SnakeViewModel == null) { Start(); }
+                // Wait 1000 ms
+                Thread.Sleep(1000);
+            }
+        }
+
+        /*
+         * Sends refresh command to server and waits for a response.
+         */
+        private async Task<Lobby> Refresh()
+        {
+            await Task.Run(() => shellViewModel.Program.RefreshSpecificLobby());
+            return shellViewModel.Program.sc.joinedLobby;
         }
 
         private void Start()
@@ -36,9 +64,20 @@ namespace SnakeClient.ViewModels
             SnakeViewModel = new SnakeViewModel(this.shellViewModel);
         }
 
-        private void Quit()
+        private async Task Quit()
         {
-
+            if (await Task.Run(() => shellViewModel.Program.LeaveLobby(lobby.Name, shellViewModel.Name)))
+                LeftLobby();
+            else
+                FailedToLeftLobby();
         }
+
+        private void LeftLobby()
+        { 
+            // TODO
+            // Quit this window and return to client view.
+            
+        }
+        private void FailedToLeftLobby() { }
     }
 }
