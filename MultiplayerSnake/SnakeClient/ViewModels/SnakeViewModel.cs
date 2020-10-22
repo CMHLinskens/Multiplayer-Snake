@@ -34,23 +34,6 @@ namespace SnakeClient.ViewModels
 
             this.drawingContext = new DrawingVisual().RenderOpen();
             Rectangles = new ObservableCollection<CustomRectangle>();
-
-            //Test
-            //gameField = new int[16, 16];
-            //for (int y = 0; y < 16; y++)
-            //{
-            //    for (int x = 0; x < 16; x++)
-            //    {
-            //        gameField[y, x] = 0;
-            //    }
-            //}
-            //
-            //gameField[3, 3] = 2;
-            //gameField[3, 4] = 2;
-            //gameField[3, 5] = 2;
-            //gameField[7, 6] = 3;
-            //gameField[8, 6] = 3;
-            //gameField[9, 6] = 3;
         }
 
         /*

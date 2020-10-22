@@ -39,6 +39,17 @@ namespace SnakeClient.ViewModels
             Task.Factory.StartNew(RefreshLoopAsync);
 
             BindKeys();
+            //Task.Factory.StartNew(WaitForGameStart);
+        }
+
+        private void WaitForGameStart()
+        {
+            while (!shellViewModel.Program.sc.ReceivedGameStartMessage)
+            {
+                Thread.Sleep(10);
+            }
+            shellViewModel.Program.sc.ReceivedGameStartMessage = false;
+            Start();
         }
 
         /*
@@ -51,8 +62,8 @@ namespace SnakeClient.ViewModels
                 // Refresh list
                 lobby = await Task.Run(() => Refresh());
                 Players = lobby.Players;
-                if(lobby.IsInGame)
-                    if(SnakeViewModel == null) { Start(); }
+                //if(lobby.IsInGame)
+                //    if(SnakeViewModel == null) { Start(); }
                 // Wait 1000 ms
                 Thread.Sleep(1000);
             }
@@ -103,7 +114,10 @@ namespace SnakeClient.ViewModels
 
         private async Task DrawLoopAsync()
         {
-            while (!shellViewModel.Program.sc.ReceivedGameStartMessage) Thread.Sleep(10);
+            while (!shellViewModel.Program.sc.ReceivedGameStartMessage)
+            {
+                Thread.Sleep(10);
+            }
             shellViewModel.Program.sc.ReceivedGameStartMessage = false;
             while (lobby.IsInGame)
             {
