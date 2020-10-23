@@ -11,7 +11,9 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Utils", "Utils\Utils.shproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnakeClient", "SnakeClient\SnakeClient.csproj", "{40121246-5607-4F81-A8F6-49008BB8AA66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeClient.Tests", "SnakeClient.Tests\SnakeClient.Tests.csproj", "{A49C2FFD-AA84-47F6-84DC-8C16920CD044}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnakeClient.Tests", "SnakeClient.Tests\SnakeClient.Tests.csproj", "{A49C2FFD-AA84-47F6-84DC-8C16920CD044}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Tests", "Server.Tests\Server.Tests.csproj", "{9A8E5BD4-5EE4-4A4B-9131-D9E2F56080F5}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -41,6 +43,10 @@ Global
 		{A49C2FFD-AA84-47F6-84DC-8C16920CD044}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A49C2FFD-AA84-47F6-84DC-8C16920CD044}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A49C2FFD-AA84-47F6-84DC-8C16920CD044}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A8E5BD4-5EE4-4A4B-9131-D9E2F56080F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A8E5BD4-5EE4-4A4B-9131-D9E2F56080F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A8E5BD4-5EE4-4A4B-9131-D9E2F56080F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A8E5BD4-5EE4-4A4B-9131-D9E2F56080F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

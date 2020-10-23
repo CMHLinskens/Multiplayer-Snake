@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Server
 {
-    class Player
+    public class Player
     {
         public string Name { get; set; }
         public int Length { get; set; }

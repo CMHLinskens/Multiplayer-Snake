@@ -8,7 +8,7 @@ using Utils;
 
 namespace Server
 {
-    class Lobby
+    public class Lobby
     {
         public string Name { get; set; }
         public List<Player> Players { get; set; }

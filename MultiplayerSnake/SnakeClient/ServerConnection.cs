@@ -213,6 +213,8 @@ namespace SnakeClient
                 case "game/end":
                     // The game has been won by someone.
                     ReceivedGameFinishedMessage = true;
+                    ReceivedNewChatMessage = true;
+                    NewChat = (string)data.data.playerName + " has won the game!";
                     break;
                 case "chat/receive":
                     // A new chat message had been received.

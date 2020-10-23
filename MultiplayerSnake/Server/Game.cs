@@ -9,7 +9,7 @@ using Utils;
 
 namespace Server
 {
-    class Game
+    public class Game
     {
         private int gameUpdateSpeed = 250; // time in ms.
         private int mapSize;
@@ -83,7 +83,7 @@ namespace Server
         /*
          * Builds the map according to the given MapSize property.
          */
-        private void InitializeGameField()
+        public void InitializeGameField()
         {
             mapSize = 0;
             switch (Lobby.MapSize)
@@ -142,6 +142,12 @@ namespace Server
             CreateNewFood();
         }
 
+        public void SetFoodPos(int x, int y)
+        {
+            food.x = x;
+            food.y = y;
+        }
+
         /*
          * Updates the position of the player by inserting and removing.
          * Updates new position and removes last position in GameField according to the Collision() result.
@@ -187,7 +193,7 @@ namespace Server
         /*
          * Checks if the player is on the food tile and should grow.
          */
-        private bool CollisionWithFood((int y, int x) newPosition)
+        public bool CollisionWithFood((int y, int x) newPosition)
         {
             return food == newPosition;
         }
@@ -266,7 +272,7 @@ namespace Server
          * Checks if the new position is out of bounds.
          * If that is the case, loop around.
          */
-        private (int, int) CheckOutOfBounds((int y, int x) newPosition)
+        public (int, int) CheckOutOfBounds((int y, int x) newPosition)
         {
             if (newPosition.y > mapSize - 1)
                 newPosition.y = 0;
