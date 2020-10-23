@@ -65,7 +65,7 @@
         
         <!--Row 8-->
         <DockPanel Grid.Column="6" Grid.Row="8" VerticalAlignment="Bottom">
-            <Button DockPanel.Dock="Left" Width="150" Height="50" Content="START!" Command="{Binding StartCommand}"/>
+            <Button DockPanel.Dock="Left" Width="150" Height="50" Content="START!" Command="{Binding StartCommand}" Visibility="{Binding StartButtonVisibility}"/>
             <Button DockPanel.Dock="Right" Width="150" Height="50" Margin="100 0 0 0" Content="QUIT" Command="{Binding QuitCommand, Mode=OneWay}" CommandParameter="{Binding ElementName=Window}"/>
         </DockPanel>
         <!--Makes chat a bit harder-->

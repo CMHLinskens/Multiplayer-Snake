@@ -18,7 +18,7 @@ namespace SnakeClient.ViewModels
 {
     class GameWindowViewModel : CustomObservableObject, INotifyPropertyChanged
     {
-        private Lobby lobby;
+        private Lobby _lobby;
         private Player player;
         private ShellViewModel shellViewModel;
 
@@ -31,6 +31,26 @@ namespace SnakeClient.ViewModels
 
         public string ChatMessage { get; set; }
         public SnakeViewModel SnakeViewModel { get; set; }
+        public Visibility StartButtonVisibility { get; set; }
+        public Lobby Lobby { 
+            get 
+            { 
+                return _lobby; 
+            } 
+            set
+            {
+                _lobby = value;
+                player = value.FindPlayerByName(shellViewModel.Name);
+                if (player != null)
+                {
+                    if (!this.player.Name.Equals(this.Lobby.GameOwner))
+                        StartButtonVisibility = Visibility.Hidden;
+                    else
+                        StartButtonVisibility = Visibility.Visible;
+                }
+
+            }
+        }
         public ICommand StartCommand { get; set; }
         public ICommand QuitCommand { get; set; }
         public ICommand KeyDownCommand { get; set; }
@@ -46,13 +66,14 @@ namespace SnakeClient.ViewModels
             KeyEnterCommand = new RelayCommand(SendMessage);
             shellViewModel.Program.sc.GameField = new int[16, 16];
             this.shellViewModel = shellViewModel;
-            this.lobby = lobby;
+            this.Lobby = lobby;
             Players = lobby.Players;
             Task.Factory.StartNew(RefreshLoopAsync);
             Task.Factory.StartNew(ChatLoopAsync);
 
             BindKeys();
             Task.Factory.StartNew(WaitForGameStart);
+
         }
 
         private void SendMessage()
@@ -95,9 +116,9 @@ namespace SnakeClient.ViewModels
             while (shellViewModel.Program.sc.LoggedIn)
             {
                 // Refresh list
-                lobby = await Task.Run(() => Refresh());
-                Players = lobby.Players;
-                player = lobby.FindPlayerByName(shellViewModel.Name);
+                Lobby = await Task.Run(() => Refresh());
+                Players = Lobby.Players;
+                player = Lobby.FindPlayerByName(shellViewModel.Name);
 
                 Thread.Sleep(1000);
             }
@@ -140,7 +161,7 @@ namespace SnakeClient.ViewModels
         {
             GetStartDirection();
             SnakeViewModel = new SnakeViewModel(this.shellViewModel);
-            lobby.IsInGame = true;
+            Lobby.IsInGame = true;
             Task.Factory.StartNew(DrawLoopAsync);
         }
 
@@ -149,7 +170,7 @@ namespace SnakeClient.ViewModels
          */
         private void GetStartDirection()
         {
-            switch (lobby.Players.IndexOf(player))
+            switch (Lobby.Players.IndexOf(player))
             {
                 case 0:
                     shellViewModel.Program.sc.MoveDirection = Direction.left;
@@ -168,7 +189,7 @@ namespace SnakeClient.ViewModels
 
         private async void Quit(ICloseable window)
         {
-            if (await Task.Run(() => shellViewModel.Program.LeaveLobby(lobby.Name, shellViewModel.Name)))
+            if (await Task.Run(() => shellViewModel.Program.LeaveLobby(Lobby.Name, shellViewModel.Name)))
                 LeftLobby();
             else
                 FailedToLeftLobby();
@@ -192,7 +213,7 @@ namespace SnakeClient.ViewModels
 
         private async Task DrawLoopAsync()
         {
-            while (lobby.IsInGame)
+            while (Lobby.IsInGame)
             {
                 if (shellViewModel.Program.sc.ReceivedNewUpdate)
                 {

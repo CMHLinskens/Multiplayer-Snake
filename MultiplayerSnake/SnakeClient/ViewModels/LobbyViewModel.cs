@@ -13,7 +13,6 @@ namespace SnakeClient.ViewModels
     {
         private ShellViewModel shellViewModel;
         private LobbyTabViewModel lobbyTabViewModel;
-
         public Lobby Lobby { get; set; }
         public string Name { get; set; }
         public ObservableCollection<Player> Players { get; set; }
@@ -23,12 +22,6 @@ namespace SnakeClient.ViewModels
         public Direction Direction{ get; set; }
         public MapSize MapSize { get; set; }
         public ICommand JoinCommand { get; set; }
-        public LobbyViewModel(string name, int maxPlayers, MapSize mapSize)
-        {
-            Name = name;
-            MaxPlayers = maxPlayers;
-            MapSize = mapSize;
-        }
 
         public LobbyViewModel(Lobby lobby, ShellViewModel shellViewModel, LobbyTabViewModel lobbyTabViewModel)
         {
