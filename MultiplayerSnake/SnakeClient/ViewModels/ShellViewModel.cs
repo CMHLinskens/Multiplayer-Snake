@@ -24,5 +24,10 @@ namespace SnakeClient.ViewModels
         {
             SelectedViewModel = new TabControlViewModel(this);
         }
+
+        internal void NavigateToRegisterPage()
+        {
+            SelectedViewModel = new RegisterViewModel(this);
+        }
     }
 }
