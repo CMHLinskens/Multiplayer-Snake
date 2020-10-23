@@ -105,7 +105,7 @@ namespace SnakeClient.ViewModels
 
         private void EndGame()
         {
-            // iets
+            // This is the EndGame
         }
 
         /*
