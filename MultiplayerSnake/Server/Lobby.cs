@@ -86,11 +86,14 @@ namespace Server
             // Wait for the data.
             await Task.Run(() =>
             {
-                foreach (var player in Players)
+                lock (Players)
                 {
-                    while (!Server.GetClientWithUserName(player.Name).ReceivedNextMove) 
-                        Thread.Sleep(5);
-                    nextMoves.Add(Server.GetClientWithUserName(player.Name).NextMove);
+                    foreach (var player in Players)
+                    {
+                        while (!Server.GetClientWithUserName(player.Name).ReceivedNextMove)
+                            Thread.Sleep(5);
+                        nextMoves.Add(Server.GetClientWithUserName(player.Name).NextMove);
+                    }
                 }
             });
 

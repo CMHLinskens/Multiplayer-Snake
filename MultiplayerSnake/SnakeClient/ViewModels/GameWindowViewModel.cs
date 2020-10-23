@@ -131,7 +131,7 @@ namespace SnakeClient.ViewModels
         {
             while (shellViewModel.Program.sc.LoggedIn)            {
                 string newChat = await Task.Run(() => shellViewModel.Program.ChatRefresh());
-                App.Current.Dispatcher.Invoke(delegate { ChatList.Add(newChat); }); // Make the collection notify by using the ui thread
+                await Task.Run(() => App.Current.Dispatcher.Invoke(delegate { ChatList.Add(newChat); })); // Make the collection notify by using the ui thread
             }
         }
 
