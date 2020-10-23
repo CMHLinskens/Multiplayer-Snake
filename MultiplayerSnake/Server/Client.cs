@@ -81,7 +81,10 @@ namespace Server
                     break;
                 case "register":
                     // Register new account to the server.
-                    Server.AddAccount((string)data.data.username, (string)data.data.password);
+                    if(Server.AddAccount((string)data.data.username, (string)data.data.password))
+                        SendPacket(PackageWrapper.SerializeData("register/success", new { message = "Successfully registered." }));
+                    else
+                        SendPacket(PackageWrapper.SerializeData("register/error", new { message = "Username is not unique" }));
                     break;
                 case "create":
                     // Determine the map size

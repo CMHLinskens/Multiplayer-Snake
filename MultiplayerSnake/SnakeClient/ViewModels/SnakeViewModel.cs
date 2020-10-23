@@ -36,11 +36,6 @@ namespace SnakeClient.ViewModels
         }
 
         /*
-         * Sets new move direction.
-         */
-
-
-        /*
          * Creates the rectangles and adds them to the Rectangles collection. "Draws" the 2d array.
          */
         public void Draw()

@@ -105,11 +105,22 @@ namespace Server
         /*
          * Adds an new account to the server.
          */
-        internal static void AddAccount(string username, string password)
+        internal static bool AddAccount(string username, string password)
         {
+            if(AccountExists(username)) { return false; }
             Account newAccount = new Account(GenerateUniqueID(), username, password);
             accounts.Add(newAccount);
             availableAccounts.Add(newAccount);
+            return true;
+        }
+
+        private static bool AccountExists(string username)
+        {
+            foreach (var acc in accounts)
+                if (acc.Username == username)
+                    return false;
+
+            return true;
         }
 
         /*

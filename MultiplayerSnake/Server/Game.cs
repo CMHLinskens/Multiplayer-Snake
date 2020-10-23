@@ -15,6 +15,8 @@ namespace Server
         private int mapSize;
         private (int y, int x) food;
         private int foodWinCondition = 20;
+        private int playerOffset = 2;
+        private int headOffset = 4;
         private Random random;
         private Stopwatch watch; // Use this to keep track of execution time of the update method.
         private Timer GameLoop { get; set; }
@@ -131,8 +133,11 @@ namespace Server
                         break;
                 }
                 // Update start position in GameField.
-                foreach (var pos in player.Position)
-                    GameField[pos.y, pos.x] = Lobby.Players.IndexOf(player) + 2;
+                for (int i = 0; i < player.Position.Count; i++)
+                {
+                    if (i == 0) GameField[player.Position[0].y, player.Position[0].x] = Lobby.Players.IndexOf(player) + playerOffset + headOffset; // Set head pos
+                    else GameField[player.Position[i].y, player.Position[i].x] = Lobby.Players.IndexOf(player) + playerOffset; // Set body positions
+                }
             }
             CreateNewFood();
         }
@@ -161,7 +166,9 @@ namespace Server
             }
             newPosition = CheckOutOfBounds(newPosition);
             player.Position.Insert(0, newPosition); // Insert new head position.
-            GameField[newPosition.y, newPosition.x] = (Lobby.Players.IndexOf(player) + 2); // Update the new position in the GameField
+            if (GameField[newPosition.y, newPosition.x]  < 2)
+                GameField[newPosition.y, newPosition.x] = (Lobby.Players.IndexOf(player) + playerOffset + headOffset); // Update the new position in the GameField.
+            GameField[player.Position[1].y, player.Position[1].x] = (Lobby.Players.IndexOf(player) + playerOffset); // Set the previous head location to a body number.
             if (CollisionWithFood(newPosition))
             {
                 player.Length++;
@@ -194,18 +201,21 @@ namespace Server
             {
                 if (p.Alive)
                 {
-                    foreach (var pos in p.Position)
+                    lock (p.Position)
                     {
-                        if (pos == player.Position[0])
+                        foreach (var pos in p.Position)
                         {
-                            // FIX
-                            // This ignores collision for all snake heads and own snake
-                            if (pos != p.Position[0])
+                            if (pos == player.Position[0])
                             {
-                                KillPlayer(player);
-                                // Restore the square that has been hit on the snake.
-                                GameField[pos.y, pos.x] = Lobby.Players.IndexOf(p) + 2;
-                                return;
+                                if (GameField[pos.y, pos.x] != (Lobby.Players.IndexOf(player) + playerOffset + headOffset))
+                                {
+                                    //int snakeNr = (Lobby.Players.IndexOf(player) + playerOffset + headOffset);
+                                    KillPlayer(player);
+                                    //if(GameField[pos.y, pos.x] != snakeNr)
+                                        // Restore the square that has been hit on the snake.
+                                    GameField[pos.y, pos.x] = Lobby.Players.IndexOf(p) + playerOffset;
+                                    return;
+                                }
                             }
                         }
                     }

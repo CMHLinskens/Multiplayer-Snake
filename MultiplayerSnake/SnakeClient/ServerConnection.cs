@@ -44,6 +44,7 @@ namespace SnakeClient
         public bool ReceivedGameStartMessage { get; set; }
         public bool ReceivedGameFinishedMessage { get; set; }
         public bool ReceivedNewChatMessage { get; set; }
+        public bool ReceivedRegisterMessage { get; private set; }
         #endregion
 
         public ServerConnection()
@@ -133,6 +134,14 @@ namespace SnakeClient
             {
                 case "chat":
                     Console.WriteLine($"{data.data.message}");
+                    break;
+                case "register/success":
+                    LoggedIn = true;
+                    ReceivedRegisterMessage = true;
+                    break;
+                case "register/error":
+                    ReceivedRegisterMessage = false;
+                    Disconnect();
                     break;
                 case "login/success":
                     LoggedIn = true;
@@ -281,6 +290,7 @@ namespace SnakeClient
         public void Register(string username, string password)
         {
             Connect(ipAddress, port);
+            ReceivedRegisterMessage = false;
             SendPacket(PackageWrapper.SerializeData("register", new { username = username, password = password }));
         }
         /*
@@ -326,19 +336,19 @@ namespace SnakeClient
             SendPacket(PackageWrapper.SerializeData("refresh", new { }));
         }
         /*
+         * Asks the server the send the next fragment of the list.
+         */
+        public void GetNextLobbyListFragment()
+        {
+            SendPacket(PackageWrapper.SerializeData("refresh/next", new { }));
+        }
+        /*
          * Asks the server to send the updated lobby to this client.
          */
         public void RefreshSpecificLobby()
         {
             ReceivedLobbyRefresh = false;
             SendPacket(PackageWrapper.SerializeData("refresh/lobby", new { }));
-        }
-        /*
-         * Asks the server the send the next fragment of the list.
-         */
-        public void GetNextLobbyListFragment()
-        {
-            SendPacket(PackageWrapper.SerializeData("refresh/next", new { }));
         }
         /*
          * Start the game of the lobby that this client is in.

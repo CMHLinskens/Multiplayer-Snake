@@ -31,6 +31,10 @@ namespace SnakeClient.Models
                 3 => Brushes.Blue,
                 4 => Brushes.Yellow,
                 5 => Brushes.Orange,
+                6 => Brushes.DarkGreen,
+                7 => Brushes.DarkBlue,
+                8 => Brushes.DarkGoldenrod,
+                9 => Brushes.DarkOrange,
                 _ => Brushes.White,
             };
         }
