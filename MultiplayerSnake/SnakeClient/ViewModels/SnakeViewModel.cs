@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using SnakeClient.Models;
 using SnakeClient.Utils;
 using System;
 using System.Collections.Generic;
