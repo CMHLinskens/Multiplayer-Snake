@@ -83,7 +83,9 @@ namespace SnakeClient.ViewModels
             SelectedViewModel = new CreateLobbyViewModel(shellViewModel, this);
             CreateButtonVisibility = Visibility.Hidden;
         }
-
+        /*
+         * Opens new window where the game takes place
+         */
         public void OpenGameWindow(Lobby lobby)
         {
             shellViewModel.Visibility = Visibility.Hidden;

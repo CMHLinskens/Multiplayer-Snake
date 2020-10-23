@@ -31,7 +31,7 @@ namespace SnakeClient.ViewModels
         public ICommand KeyRightCommand { get; set; }
         public GameWindowViewModel(Lobby lobby, ShellViewModel shellViewModel)
         {
-            StartCommand = new RelayCommand(Start);
+            StartCommand = new RelayCommand(RequestStartGame);
             QuitCommand = new RelayCommand<ICloseable>(Quit);
             shellViewModel.Program.sc.GameField = new int[16, 16];
             this.shellViewModel = shellViewModel;
