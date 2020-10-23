@@ -45,6 +45,7 @@
         
         <!--Row 4-->
         <Border Grid.Column="6" Grid.Row="4" Grid.RowSpan="3" BorderThickness="1" BorderBrush="Black">
+            <ScrollViewer VerticalScrollBarVisibility="Visible">
             <ItemsControl ItemsSource="{Binding ChatList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="12">
                 <!--<ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -52,6 +53,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>-->
             </ItemsControl>
+            </ScrollViewer>
         </Border>
         
         <!--Row 7-->

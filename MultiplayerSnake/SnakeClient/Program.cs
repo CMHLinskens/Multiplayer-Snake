@@ -87,7 +87,7 @@ namespace SnakeClient
         internal string ChatRefresh()
         {
             while (!sc.ReceivedNewChatMessage)
-                Thread.Sleep(10);
+                Thread.Sleep(100);
 
             sc.ReceivedNewChatMessage = false;
             return sc.NewChat;

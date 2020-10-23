@@ -4,6 +4,8 @@ using SnakeClient.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,13 +16,19 @@ using Utils;
 
 namespace SnakeClient.ViewModels
 {
-    class GameWindowViewModel : CustomObservableObject
+    class GameWindowViewModel : CustomObservableObject, INotifyPropertyChanged
     {
         private Lobby lobby;
         private Player player;
         private ShellViewModel shellViewModel;
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
         public ObservableCollection<Player> Players{ get; set; }
+        //public ObservableCollection<string> ChatList { get; set; }
+
         public ObservableCollection<string> ChatList { get; set; }
+
         public string ChatMessage { get; set; }
         public SnakeViewModel SnakeViewModel { get; set; }
         public ICommand StartCommand { get; set; }
@@ -32,10 +40,10 @@ namespace SnakeClient.ViewModels
         public ICommand KeyEnterCommand { get; set; }
         public GameWindowViewModel(Lobby lobby, ShellViewModel shellViewModel)
         {
+            ChatList = new ObservableCollection<string>();
             StartCommand = new RelayCommand(RequestStartGame);
             QuitCommand = new RelayCommand<ICloseable>(Quit);
             KeyEnterCommand = new RelayCommand(SendMessage);
-            ChatList = new ObservableCollection<string>();
             shellViewModel.Program.sc.GameField = new int[16, 16];
             this.shellViewModel = shellViewModel;
             this.lobby = lobby;
@@ -100,10 +108,9 @@ namespace SnakeClient.ViewModels
          */
         private async Task ChatLoopAsync()
         {
-            while (shellViewModel.Program.sc.LoggedIn)
-            {
+            while (shellViewModel.Program.sc.LoggedIn)            {
                 string newChat = await Task.Run(() => shellViewModel.Program.ChatRefresh());
-                ChatList.Add(newChat);
+                App.Current.Dispatcher.Invoke(delegate { ChatList.Add(newChat); }); // Make the collection notify by using the ui thread
             }
         }
 
