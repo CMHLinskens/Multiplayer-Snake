@@ -11,7 +11,7 @@ namespace Server
 {
     class Game
     {
-        private int gameUpdateSpeed = 500; // time in ms.
+        private int gameUpdateSpeed = 250; // time in ms.
         private int mapSize;
         private (int y, int x) food;
         private int foodWinCondition = 20;
@@ -126,10 +126,10 @@ namespace Server
                         player.Position = new List<(int, int)> { (4, 2), (3, 2), (2, 2) };
                         break;
                     case 2:
-                        player.Position = new List<(int, int)> { (13, 4), (13, 3), (13, 2) };
+                        player.Position = new List<(int, int)> { (mapSize - 3, 4), (mapSize - 3, 3), (mapSize - 3, 2) };
                         break;
                     case 3:
-                        player.Position = new List<(int, int)> { (11, 13), (12, 13), (13, 13) };
+                        player.Position = new List<(int, int)> { (11, mapSize - 3), (12, mapSize - 3), (13, mapSize - 3) };
                         break;
                 }
                 // Update start position in GameField.
@@ -291,34 +291,6 @@ namespace Server
                 food.x = random.Next(0, mapSize - 1);
             } while (GameField[food.y, food.x] != 0);
             GameField[food.y, food.x] = 1;
-        }
-
-        /*
-         * Check for collision with food or players.
-         */
-        private bool Collision(out CollisionType collisionType, (int y, int x) newPosition)
-        {
-            if(food == newPosition)
-            {
-                collisionType = CollisionType.Apple;
-                return true;
-            }
-            foreach(var player in Lobby.Players)
-            {
-                foreach(var pos in player.Position)
-                {
-                    if(pos == newPosition)
-                    {
-                        if (pos != player.Position[0])
-                        {
-                            collisionType = CollisionType.Player;
-                            return true;
-                        }
-                    }
-                }
-            }
-            collisionType = CollisionType.None;
-            return false;
         }
 
         /*

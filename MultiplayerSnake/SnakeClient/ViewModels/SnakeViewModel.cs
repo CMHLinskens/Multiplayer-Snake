@@ -21,7 +21,6 @@ namespace SnakeClient.ViewModels
         private int[,] gameField;
         public double Width { get; set; } = 1140;
         public double Height { get; set; } = 920;
-        private DrawingContext drawingContext;
         private ShellViewModel shellViewModel;
         public StrokeCollection StrokeCollection { get; set; }
         public ObservableCollection<CustomRectangle> Rectangles{ get; set; }
@@ -30,8 +29,6 @@ namespace SnakeClient.ViewModels
         {
             StrokeCollection = new StrokeCollection();
             this.shellViewModel = shellViewModel;
-
-            this.drawingContext = new DrawingVisual().RenderOpen();
             Rectangles = new ObservableCollection<CustomRectangle>();
         }
 

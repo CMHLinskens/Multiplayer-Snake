@@ -28,5 +28,8 @@
         <DataTemplate DataType="{x:Type viewModels:SnakeViewModel}">
             <views:SnakeView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:RegisterViewModel}">
+            <views:RegisterView/>
+        </DataTemplate>
     </Application.Resources>
 </Application>
