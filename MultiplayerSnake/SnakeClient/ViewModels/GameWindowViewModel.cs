@@ -29,18 +29,28 @@ namespace SnakeClient.ViewModels
         public ICommand KeyLeftCommand { get; set; }
         public ICommand KeyUpCommand { get; set; }
         public ICommand KeyRightCommand { get; set; }
+        public ICommand KeyEnterCommand { get; set; }
         public GameWindowViewModel(Lobby lobby, ShellViewModel shellViewModel)
         {
-            StartCommand = new RelayCommand(Start);
+            StartCommand = new RelayCommand(RequestStartGame);
             QuitCommand = new RelayCommand<ICloseable>(Quit);
+            KeyEnterCommand = new RelayCommand(SendMessage);
+            ChatList = new ObservableCollection<string>();
             shellViewModel.Program.sc.GameField = new int[16, 16];
             this.shellViewModel = shellViewModel;
             this.lobby = lobby;
             Players = lobby.Players;
             Task.Factory.StartNew(RefreshLoopAsync);
+            Task.Factory.StartNew(ChatLoopAsync);
 
             BindKeys();
             Task.Factory.StartNew(WaitForGameStart);
+        }
+
+        private void SendMessage()
+        {
+            shellViewModel.Program.sc.SendChat(ChatMessage);
+            ChatMessage = "";
         }
 
         private void WaitForGameStart()
@@ -80,10 +90,20 @@ namespace SnakeClient.ViewModels
                 lobby = await Task.Run(() => Refresh());
                 Players = lobby.Players;
                 player = lobby.FindPlayerByName(shellViewModel.Name);
-                //if(lobby.IsInGame)
-                //    if(SnakeViewModel == null) { Start(); }
-                // Wait 1000 ms
+
                 Thread.Sleep(1000);
+            }
+        }
+
+        /*
+         * Checks if a new chat message has been received.
+         */
+        private async Task ChatLoopAsync()
+        {
+            while (shellViewModel.Program.sc.LoggedIn)
+            {
+                string newChat = await Task.Run(() => shellViewModel.Program.ChatRefresh());
+                ChatList.Add(newChat);
             }
         }
 

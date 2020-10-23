@@ -115,10 +115,10 @@ namespace Server
         /*
          * Sends a package to all connected clients.
          */
-        internal static void Broadcast(byte[] bytes)
+        internal static void BroadcastToLobby(Lobby lobby, byte[] bytes)
         {
-            foreach (var client in clients)
-                client.SendPacket(bytes);
+            foreach (var player in lobby.Players)
+                GetClientWithUserName(player.Name).SendPacket(bytes);
         }
 
         /*

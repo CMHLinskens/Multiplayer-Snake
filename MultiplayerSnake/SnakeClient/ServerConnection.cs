@@ -30,6 +30,7 @@ namespace SnakeClient
         public Lobby joinedLobby { get; private set; }
         public Direction MoveDirection { get; set; }
         public int[,] GameField { get; set; }
+        public string NewChat { get; private set; }
 
         #region // Reply booleans
         public bool ReceivedLoginMessage { get; private set; }
@@ -42,6 +43,7 @@ namespace SnakeClient
         public bool ReceivedNewUpdate { get; set; }
         public bool ReceivedGameStartMessage { get; set; }
         public bool ReceivedGameFinishedMessage { get; set; }
+        public bool ReceivedNewChatMessage { get; set; }
         #endregion
 
         public ServerConnection()
@@ -200,8 +202,13 @@ namespace SnakeClient
                     UpdateGameField(data.data.gameField);
                     break;
                 case "game/end":
-                    // The game has been won by someone
+                    // The game has been won by someone.
                     ReceivedGameFinishedMessage = true;
+                    break;
+                case "chat/receive":
+                    // A new chat message had been received.
+                    ReceivedNewChatMessage = true;
+                    NewChat = (string)data.data.message;
                     break;
                 default:
                     Console.WriteLine($"No handling found for tag: {tag}");

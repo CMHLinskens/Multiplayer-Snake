@@ -45,11 +45,21 @@
         
         <!--Row 4-->
         <Border Grid.Column="6" Grid.Row="4" Grid.RowSpan="3" BorderThickness="1" BorderBrush="Black">
-        <ItemsControl/>
+            <ItemsControl ItemsSource="{Binding ChatList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="12">
+                <!--<ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>-->
+            </ItemsControl>
         </Border>
         
         <!--Row 7-->
-        <TextBox Grid.Column="6" Grid.Row="7" Margin="0 0 0 30"/>
+        <TextBox Grid.Column="6" Grid.Row="7" Margin="0 0 0 30" Text="{Binding ChatMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding KeyEnterCommand}"/>
+            </TextBox.InputBindings>
+        </TextBox>
         
         <!--Row 8-->
         <DockPanel Grid.Column="6" Grid.Row="8" VerticalAlignment="Bottom">

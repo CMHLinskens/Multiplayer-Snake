@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Utils;
 
 namespace SnakeClient
@@ -81,6 +82,15 @@ namespace SnakeClient
         internal void StopGame()
         {
             sc.StopGame();
+        }
+
+        internal string ChatRefresh()
+        {
+            while (!sc.ReceivedNewChatMessage)
+                Thread.Sleep(10);
+
+            sc.ReceivedNewChatMessage = false;
+            return sc.NewChat;
         }
     }
 }

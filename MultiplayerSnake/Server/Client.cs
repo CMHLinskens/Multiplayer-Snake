@@ -68,8 +68,8 @@ namespace Server
             switch (tag)
             {
                 case "chat":
-                    bytes = PackageWrapper.SerializeData(tag, new { message = $"{Account.Username}: {data.data.message}" });
-                    Server.Broadcast(bytes);
+                    bytes = PackageWrapper.SerializeData("chat/receive", new { message = $"{Account.Username}: {data.data.message}" });
+                    Server.BroadcastToLobby(Lobby, bytes);
                     break;
                 case "login":
                     if(Server.CheckCredentials((string)data.data.username, (string)data.data.password, this))
