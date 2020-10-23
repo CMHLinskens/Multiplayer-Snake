@@ -5,11 +5,11 @@ using Utils;
 
 namespace SnakeClient
 {
-    class Program
+    class Client
     {
         public ServerConnection sc { get; }
 
-        public Program()
+        public Client()
         {
             sc = new ServerConnection();
         }

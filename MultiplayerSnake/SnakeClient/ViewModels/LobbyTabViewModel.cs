@@ -22,6 +22,7 @@ namespace SnakeClient.ViewModels
         public Visibility CreateButtonVisibility { get; set; } = Visibility.Visible;
         public ObservableCollection<LobbyViewModel> Lobbies{ get; set; }
         public ICommand CreateLobbyCommand { get; set; }
+        public string Name { get; set; }
         public CustomObservableObject SelectedLobbyViewModel
         {
             get { return _selectedLobbyViewModel; }
@@ -39,6 +40,7 @@ namespace SnakeClient.ViewModels
         public CustomObservableObject SelectedViewModel { get; set; }
         public LobbyTabViewModel(ShellViewModel shellViewModel)
         {
+            Name = shellViewModel.Name;
             selectedLobbyName = "";
             Lobbies = new ObservableCollection<LobbyViewModel> { new LobbyViewModel(new Lobby("TestLobby", "Test", 2, MapSize.size16x16), shellViewModel, this)};
             this.shellViewModel = shellViewModel;

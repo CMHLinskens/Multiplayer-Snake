@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SnakeClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="540" Width="800" Visibility="{Binding Visibility, Mode=TwoWay}" >
+        Title="Multiplayer Snake" Height="540" Width="800" Visibility="{Binding Visibility, Mode=TwoWay}" >
     
     <UserControl Content="{Binding SelectedViewModel}"/>
 

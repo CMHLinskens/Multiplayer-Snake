@@ -10,13 +10,13 @@ namespace SnakeClient.ViewModels
     class ShellViewModel : CustomObservableObject
     {
         public string Name { get; set; }
-        public Program Program { get; set; }
+        public Client Program { get; set; }
         public Visibility Visibility{ get; set; }
         public CustomObservableObject SelectedViewModel{ get; set; }
         
         public ShellViewModel()
         {
-            Program = new Program();
+            Program = new Client();
             SelectedViewModel = new LoginViewModel(this);
         }
 
