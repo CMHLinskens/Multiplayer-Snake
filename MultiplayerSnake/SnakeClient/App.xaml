@@ -16,9 +16,6 @@
         <DataTemplate DataType="{x:Type viewModels:LobbyTabViewModel}">
             <views:LobbyTabView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type viewModels:ChatTabViewModel}">
-            <views:ChatTabView/>
-        </DataTemplate>
         <DataTemplate DataType="{x:Type viewModels:CreateLobbyViewModel}">
             <views:CreateLobbyView/>
         </DataTemplate>

@@ -2,17 +2,8 @@
 using SnakeClient.Models;
 using SnakeClient.Utils;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using Utils;
 
 namespace SnakeClient.ViewModels
 {

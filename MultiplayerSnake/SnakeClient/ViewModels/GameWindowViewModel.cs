@@ -1,8 +1,6 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using SnakeClient.Models;
 using SnakeClient.Utils;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -10,7 +8,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using Utils;
 
@@ -131,7 +128,6 @@ namespace SnakeClient.ViewModels
         {
             while (shellViewModel.Program.sc.LoggedIn)            {
                 string newChat = await Task.Run(() => shellViewModel.Program.ChatRefresh());
-                await Task.Run(() => Thread.Sleep(20));
                 await Task.Run(() => App.Current.Dispatcher.Invoke(delegate { ChatList.Add(newChat); })); // Make the collection notify by using the ui thread
             }
         }

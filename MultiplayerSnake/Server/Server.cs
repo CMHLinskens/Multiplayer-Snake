@@ -26,13 +26,13 @@ namespace Server
          */
         public void StartListen()
         {
+            // Retrieve all saved accounts
             accounts = FileReadWriter.RetrieveAllAccounts();
-            if (accounts.Count <= 0) // test
-                LoadTestAccounts(); // test
             availableAccounts = new List<Account>(accounts);
             lobbies = new List<Lobby>();
-
             clients = new List<Client>();
+
+            // Start listening for clients.
             listener = new TcpListener(IPAddress.Any, 10001);
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(Connect), null);
@@ -52,13 +52,6 @@ namespace Server
                         break;
                 }
             }
-        }
-
-        // Loads hardcoded accounts for testing.
-        private void LoadTestAccounts()
-        {
-            accounts.Add(new Account(GenerateUniqueID(), "Kees", "123"));
-            accounts.Add(new Account(GenerateUniqueID(), "Piet", "123"));
         }
 
         /*

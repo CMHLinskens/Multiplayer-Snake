@@ -3,9 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Mail;
 using System.Net.Sockets;
-using System.Security.Cryptography;
 using System.Text;
 using Utils;
 
@@ -82,13 +80,13 @@ namespace Server
                 case "register":
                     // Register new account to the server.
                     if(Server.AddAccount((string)data.data.username, (string)data.data.password))
+                        // Successfullt created a new account.
                         SendPacket(PackageWrapper.SerializeData("register/success", new { message = "Successfully registered." }));
                     else
+                        // Username was not unique.
                         SendPacket(PackageWrapper.SerializeData("register/error", new { message = "Username is not unique" }));
                     break;
                 case "create":
-                    // Determine the map size
-                    //MapSize mapSize = (string)data.data.mapSize == "size16x16" ? MapSize.size16x16 : (string)data.data.mapSize == "size32x32" ? MapSize.size32x32 : MapSize.size32x32;
                     if (Server.CreateLobby((string)data.data.lobbyName, (string)data.data.gameOwner, (int)data.data.maxPlayers, (MapSize)data.data.mapSize, this))
                         // Successfully created a new lobby.
                         SendPacket(PackageWrapper.SerializeData("create/success", new { message = "Lobby created." }));

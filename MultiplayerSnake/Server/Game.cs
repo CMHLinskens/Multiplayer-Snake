@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using Utils;
@@ -76,7 +74,6 @@ namespace Server
             Lobby.IsInGame = true;
             IsRunning = true;
             await Task.Run(() => InitializeGameField());
-            Console.WriteLine(this);
             GameLoop.Start();
         }
 
