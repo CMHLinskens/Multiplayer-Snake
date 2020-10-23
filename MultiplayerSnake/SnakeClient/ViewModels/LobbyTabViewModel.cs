@@ -86,6 +86,7 @@ namespace SnakeClient.ViewModels
 
         public void OpenGameWindow(Lobby lobby)
         {
+            //shellViewModel.Visibility = Visibility.Hidden;
             GameWindow gameWindow = new GameWindow();
             gameWindow.DataContext = new GameWindowViewModel(lobby, this.shellViewModel);
             gameWindow.Show();

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SnakeClient.Views"
         mc:Ignorable="d"
-        Title="GameWindow" Height="1080" Width="1920" FontSize="30" WindowState="Maximized">
+        x:Name="Window"
+        Title="Snake" Height="1080" Width="1920" FontSize="30" WindowState="Maximized" ResizeMode="NoResize">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
@@ -53,7 +54,7 @@
         <!--Row 8-->
         <DockPanel Grid.Column="6" Grid.Row="8" VerticalAlignment="Bottom">
             <Button DockPanel.Dock="Left" Width="150" Height="50" Content="START!" Command="{Binding StartCommand}"/>
-            <Button DockPanel.Dock="Right" Width="150" Height="50" Margin="100 0 0 0" Content="QUIT" Command="{Binding QuitCommand}"/>
+            <Button DockPanel.Dock="Right" Width="150" Height="50" Margin="100 0 0 0" Content="QUIT" Command="{Binding QuitCommand, Mode=OneWay}" CommandParameter="{Binding ElementName=Window}"/>
         </DockPanel>
         <!--Makes chat a bit harder-->
         <!--<Grid.InputBindings>

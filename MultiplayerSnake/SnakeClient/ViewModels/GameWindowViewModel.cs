@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Utils;
@@ -28,10 +29,11 @@ namespace SnakeClient.ViewModels
         public ICommand KeyLeftCommand { get; set; }
         public ICommand KeyUpCommand { get; set; }
         public ICommand KeyRightCommand { get; set; }
+        public Visibility Visibility { get; set; }
         public GameWindowViewModel(Lobby lobby, ShellViewModel shellViewModel)
         {
-            StartCommand = new RelayCommand(RequestStartGame);
-            QuitCommand = new RelayCommand(async () => await Quit());
+            StartCommand = new RelayCommand(Start);
+            QuitCommand = new RelayCommand<ICloseable>(Quit);
             shellViewModel.Program.sc.GameField = new int[16, 16];
             this.shellViewModel = shellViewModel;
             this.lobby = lobby;
@@ -98,12 +100,13 @@ namespace SnakeClient.ViewModels
             Task.Factory.StartNew(DrawLoopAsync);
         }
 
-        private async Task Quit()
+        private async void Quit(ICloseable window)
         {
             if (await Task.Run(() => shellViewModel.Program.LeaveLobby(lobby.Name, shellViewModel.Name)))
                 LeftLobby();
             else
                 FailedToLeftLobby();
+            window.Close();
         }
 
         private void LeftLobby()

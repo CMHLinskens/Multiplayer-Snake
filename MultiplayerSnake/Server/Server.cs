@@ -33,7 +33,7 @@ namespace Server
             lobbies = new List<Lobby>();
 
             clients = new List<Client>();
-            listener = new TcpListener(IPAddress.Any, 1330);
+            listener = new TcpListener(IPAddress.Any, 10001);
             listener.Start();
             listener.BeginAcceptTcpClient(new AsyncCallback(Connect), null);
 

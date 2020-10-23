@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
+using System.Windows;
 
 namespace SnakeClient.ViewModels
 {
@@ -10,6 +11,7 @@ namespace SnakeClient.ViewModels
     {
         public string Name { get; set; }
         public Program Program { get; set; }
+        public Visibility Visibility{ get; set; }
         public CustomObservableObject SelectedViewModel{ get; set; }
         
         public ShellViewModel()

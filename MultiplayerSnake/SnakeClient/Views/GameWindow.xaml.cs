@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SnakeClient.Utils;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -14,8 +15,10 @@ namespace SnakeClient.Views
 {
     /// <summary>
     /// Interaction logic for GameWindow.xaml
+    /// Implements ICloseable so it does not violate the MVVM pattern
+    /// if we want to close.
     /// </summary>
-    public partial class GameWindow : Window
+    public partial class GameWindow : Window, ICloseable
     {
         public GameWindow()
         {
