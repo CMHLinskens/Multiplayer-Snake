@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SnakeClient.Views"
         mc:Ignorable="d"
         x:Name="Window"
-        Title="Snake" Height="1080" Width="1920" FontSize="30" WindowState="Maximized" ResizeMode="NoResize">
+        Title="Snake" Height="1080" Width="1920" FontSize="30" WindowState="Maximized" ResizeMode="NoResize" WindowStyle="None">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>

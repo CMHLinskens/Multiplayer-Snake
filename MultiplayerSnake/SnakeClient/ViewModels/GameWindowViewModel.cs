@@ -172,7 +172,8 @@ namespace SnakeClient.ViewModels
                 LeftLobby();
             else
                 FailedToLeftLobby();
-            window.Close();
+            if(window != null)
+                window.Close();
             shellViewModel.Visibility = Visibility.Visible;
         }
 
