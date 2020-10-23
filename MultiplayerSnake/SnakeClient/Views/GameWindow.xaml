@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SnakeClient.Views"
         mc:Ignorable="d"
         x:Name="Window"
-        Title="Snake" Height="1080" Width="1920" FontSize="30" WindowState="Maximized" ResizeMode="NoResize">
+        Title="Snake" Height="1080" Width="1920" FontSize="30" WindowState="Maximized" ResizeMode="NoResize" WindowStyle="None">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50"/>
@@ -45,6 +45,7 @@
         
         <!--Row 4-->
         <Border Grid.Column="6" Grid.Row="4" Grid.RowSpan="3" BorderThickness="1" BorderBrush="Black">
+            <ScrollViewer VerticalScrollBarVisibility="Visible">
             <ItemsControl ItemsSource="{Binding ChatList, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" FontSize="12">
                 <!--<ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -52,6 +53,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>-->
             </ItemsControl>
+            </ScrollViewer>
         </Border>
         
         <!--Row 7-->
@@ -63,7 +65,7 @@
         
         <!--Row 8-->
         <DockPanel Grid.Column="6" Grid.Row="8" VerticalAlignment="Bottom">
-            <Button DockPanel.Dock="Left" Width="150" Height="50" Content="START!" Command="{Binding StartCommand}"/>
+            <Button DockPanel.Dock="Left" Width="150" Height="50" Content="START!" Command="{Binding StartCommand}" Visibility="{Binding StartButtonVisibility}"/>
             <Button DockPanel.Dock="Right" Width="150" Height="50" Margin="100 0 0 0" Content="QUIT" Command="{Binding QuitCommand, Mode=OneWay}" CommandParameter="{Binding ElementName=Window}"/>
         </DockPanel>
         <!--Makes chat a bit harder-->
