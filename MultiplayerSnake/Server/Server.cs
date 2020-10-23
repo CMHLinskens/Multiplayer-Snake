@@ -124,7 +124,7 @@ namespace Server
         }
 
         /*
-         * Sends a package to all connected clients.
+         * Sends a package to all connected clients in the given lobby.
          */
         internal static void BroadcastToLobby(Lobby lobby, byte[] bytes)
         {
@@ -287,6 +287,11 @@ namespace Server
                 }
             }
             return false; // No match found
+        }
+
+        static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            FileReadWriter.SaveAllAccounts(accounts);
         }
     }
 }
