@@ -140,7 +140,7 @@ namespace SnakeClient
                     ReceivedRegisterMessage = true;
                     break;
                 case "register/error":
-                    ReceivedRegisterMessage = false;
+                    ReceivedRegisterMessage = true;
                     Disconnect();
                     break;
                 case "login/success":

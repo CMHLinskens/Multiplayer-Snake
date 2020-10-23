@@ -12,19 +12,24 @@ namespace SnakeClient.ViewModels
     class LoginViewModel : CustomObservableObject
     {
         private ShellViewModel shellViewModel;
-
         public string Username { get; set; }
-
         public string Password { private get; set; }
         public string LoginMessage { get; set; }
         public ICommand LoginCommand { get; set; }
+        public ICommand RegisterCommand { get; set; }
         public LoginViewModel(ShellViewModel shellViewModel)
         {
             this.shellViewModel = shellViewModel;
-            LoginCommand = new RelayCommand(async () => await LoginAsync());
+            LoginCommand = new RelayCommand(LoginAsync);
+            RegisterCommand = new RelayCommand(NavigateToRegister);
         }
 
-        private async Task LoginAsync()
+        private void NavigateToRegister()
+        {
+            shellViewModel.NavigateToRegisterPage();
+        }
+
+        private async void LoginAsync()
         {
             if (await Task.Run(() => shellViewModel.Program.Login(Username, Password)))
                 LoginSucceeded();

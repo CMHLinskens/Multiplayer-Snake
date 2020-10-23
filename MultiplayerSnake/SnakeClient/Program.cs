@@ -14,6 +14,16 @@ namespace SnakeClient
             sc = new ServerConnection();
         }
 
+        internal bool Register(string username, string password)
+        {
+            sc.Register(username, password);
+
+            while (!sc.ReceivedRegisterMessage)
+                Thread.Sleep(10);
+
+            return sc.LoggedIn;
+        }
+
         internal bool Login(string username, string password)
         {
             sc.Login(username, password);

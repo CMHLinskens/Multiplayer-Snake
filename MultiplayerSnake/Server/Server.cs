@@ -118,9 +118,9 @@ namespace Server
         {
             foreach (var acc in accounts)
                 if (acc.Username == username)
-                    return false;
+                    return true;
 
-            return true;
+            return false;
         }
 
         /*
