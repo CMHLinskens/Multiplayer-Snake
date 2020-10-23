@@ -20,7 +20,7 @@ namespace SnakeClient
     {
         private TcpClient tcpClient;
         private string ipAddress = "127.0.0.1";
-        private int port = 1330;
+        private int port = 10001;
         private int totalConnectTries;
         private readonly int maxReconnectingTries = 3;
         private byte[] buffer = new byte[1024];

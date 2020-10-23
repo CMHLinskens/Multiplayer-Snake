@@ -29,7 +29,6 @@ namespace SnakeClient.ViewModels
         public ICommand KeyLeftCommand { get; set; }
         public ICommand KeyUpCommand { get; set; }
         public ICommand KeyRightCommand { get; set; }
-        public Visibility Visibility { get; set; }
         public GameWindowViewModel(Lobby lobby, ShellViewModel shellViewModel)
         {
             StartCommand = new RelayCommand(Start);
@@ -107,6 +106,7 @@ namespace SnakeClient.ViewModels
             else
                 FailedToLeftLobby();
             window.Close();
+            shellViewModel.Visibility = Visibility.Visible;
         }
 
         private void LeftLobby()
