@@ -47,7 +47,10 @@ namespace Server
                 if(player.Alive)
                     MovePlayer(player, nextMoves[Lobby.Players.IndexOf(player)]);
 
-            Console.WriteLine(this);
+            // Check if snakes are colliding with each other
+            foreach (var player in Lobby.Players)
+                if (player.Alive)
+                    CheckCollisionWithSnakes(player);
 
             // Send new update to all clients in this lobby.
             foreach (var player in Lobby.Players)
@@ -159,19 +162,11 @@ namespace Server
             newPosition = CheckOutOfBounds(newPosition);
             player.Position.Insert(0, newPosition); // Insert new head position.
             GameField[newPosition.y, newPosition.x] = (Lobby.Players.IndexOf(player) + 2); // Update the new position in the GameField
-            CollisionType collisionType;
-            if (Collision(out collisionType, newPosition))
+            if (CollisionWithFood(newPosition))
             {
-                if (collisionType == CollisionType.Apple)
-                {
-                    player.Length++;
-                    CreateNewFood();
-                    CheckForWinByFood(player);
-                }
-                else if (collisionType == CollisionType.Player)
-                {
-                    KillPlayer(player);
-                }
+                player.Length++;
+                CreateNewFood();
+                CheckForWinByFood(player);
             }
             else
             {
@@ -180,6 +175,43 @@ namespace Server
                 // Remove the last position in the player position list.
                 player.Position.RemoveAt(player.Position.Count - 1);
             }
+        }
+
+        /*
+         * Checks if the player is on the food tile and should grow.
+         */
+        private bool CollisionWithFood((int y, int x) newPosition)
+        {
+            return food == newPosition;
+        }
+
+        /*
+         * Checks if the players head is colliding with other snakes.
+         */
+        private void CheckCollisionWithSnakes(Player player)
+        {
+            foreach (var p in Lobby.Players)
+            {
+                if (p.Alive)
+                {
+                    foreach (var pos in p.Position)
+                    {
+                        if (pos == player.Position[0])
+                        {
+                            // FIX
+                            // This ignores collision for all snake heads and own snake
+                            if (pos != p.Position[0])
+                            {
+                                KillPlayer(player);
+                                // Restore the square that has been hit on the snake.
+                                GameField[pos.y, pos.x] = Lobby.Players.IndexOf(p) + 2;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         /*
@@ -216,9 +248,8 @@ namespace Server
         {
             StopGame();
 
-            // TODO FIX
-            //foreach (var p in Lobby.Players)
-            //    Server.GetClientWithUserName(p.Name).SendPacket(PackageWrapper.SerializeData("game/end", new { playerName = player.Name }));
+            foreach (var p in Lobby.Players)
+                Server.GetClientWithUserName(p.Name).SendPacket(PackageWrapper.SerializeData("game/end", new { playerName = player.Name }));
         }
 
         /*

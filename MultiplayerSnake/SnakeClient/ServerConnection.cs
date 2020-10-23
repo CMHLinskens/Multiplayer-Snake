@@ -41,6 +41,7 @@ namespace SnakeClient
         public bool ReceivedStartGame { get; set; }
         public bool ReceivedNewUpdate { get; set; }
         public bool ReceivedGameStartMessage { get; set; }
+        public bool ReceivedGameFinishedMessage { get; set; }
         #endregion
 
         public ServerConnection()
@@ -200,7 +201,8 @@ namespace SnakeClient
                     break;
                 case "game/end":
                     // The game has been won by someone
-
+                    ReceivedGameFinishedMessage = true;
+                    break;
                 default:
                     Console.WriteLine($"No handling found for tag: {tag}");
                     break;

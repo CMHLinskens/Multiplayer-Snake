@@ -50,6 +50,22 @@ namespace SnakeClient.ViewModels
             }
             shellViewModel.Program.sc.ReceivedGameStartMessage = false;
             Start();
+            Task.Factory.StartNew(WaitForGameEnd);
+        }
+
+        private void WaitForGameEnd()
+        {
+            while (!shellViewModel.Program.sc.ReceivedGameFinishedMessage)
+            {
+                Thread.Sleep(10);
+            }
+            shellViewModel.Program.sc.ReceivedGameFinishedMessage = false;
+            WaitForGameStart();
+        }
+
+        private void EndGame()
+        {
+            // iets
         }
 
         /*
@@ -62,6 +78,7 @@ namespace SnakeClient.ViewModels
                 // Refresh list
                 lobby = await Task.Run(() => Refresh());
                 Players = lobby.Players;
+                player = lobby.FindPlayerByName(shellViewModel.Name);
                 //if(lobby.IsInGame)
                 //    if(SnakeViewModel == null) { Start(); }
                 // Wait 1000 ms
@@ -93,9 +110,32 @@ namespace SnakeClient.ViewModels
 
         private void Start()
         {
+            GetStartDirection();
             SnakeViewModel = new SnakeViewModel(this.shellViewModel);
             lobby.IsInGame = true;
             Task.Factory.StartNew(DrawLoopAsync);
+        }
+
+        /*
+         * Determine the right start direction for this player.
+         */
+        private void GetStartDirection()
+        {
+            switch (lobby.Players.IndexOf(player))
+            {
+                case 0:
+                    shellViewModel.Program.sc.MoveDirection = Direction.left;
+                    break;
+                case 1:
+                    shellViewModel.Program.sc.MoveDirection = Direction.down;
+                    break;
+                case 2:
+                    shellViewModel.Program.sc.MoveDirection = Direction.right;
+                    break;
+                case 3:
+                    shellViewModel.Program.sc.MoveDirection = Direction.up;
+                    break;
+            }
         }
 
         private async Task Quit()

@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Utils;
 
@@ -38,6 +40,15 @@ namespace SnakeClient.Models
             MaxPlayers = maxPlayers;
             GameOwner = gameOwner;
             MapSize = mapSize;
+        }
+
+        public Player FindPlayerByName(string playerName)
+        {
+            foreach(var player in Players)
+                if (player.Name == playerName)
+                    return player;
+
+            return null;
         }
     }
 }

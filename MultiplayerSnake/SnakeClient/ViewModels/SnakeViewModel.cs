@@ -29,8 +29,6 @@ namespace SnakeClient.ViewModels
         {
             StrokeCollection = new StrokeCollection();
             this.shellViewModel = shellViewModel;
-            // Bind the key events
-
 
             this.drawingContext = new DrawingVisual().RenderOpen();
             Rectangles = new ObservableCollection<CustomRectangle>();
